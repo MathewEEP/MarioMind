@@ -5,11 +5,15 @@ import math
 pygame.init()
 size = 16 # Size of squares
 # independent from sizex, sizey
-width, height = 256, 240 #Game dimensions
+width, height = 256, 240 # Game dimensions
 mariox, marioy = 0, 0
-mariodx, mariody = 0, 0 # Difference in x and y
-# these are velocities, need acceleration for both dx and dy (there's horizontal acceleration in actual game)
+velo_x, velo_y = 0, 0 # Difference in x and y
+# these are velocities, need acceleration for both dx and dy (there's horizontal acceleration in actual game
+
 sizex, sizey = 20, 20 # Doesn't do anything rn
+
+PLAYER_MAX_SPEED = 1
+accel = 0
 
 mario = pygame.Rect(width/2, height/2-size, size, size)
 
@@ -117,7 +121,7 @@ def goombaCollision():
                 #goomba_rects.remove(goomba_rects[i]) Not needed for some reason?
                 break
             elif goomba_rect.left <= mario.left <= goomba_rect.right and mario.top <= goomba_rect.top <= mario.bottom:
-                print("RIGHT INTERSECITON")
+                print("RIGHT INTERSECTION")
                 gameEnded = True
             elif mario.left <= goomba_rect.left <= mario.right and mario.top <= goomba_rect.top <= mario.bottom:
                 print("LEFT INTERSECTION")
@@ -166,14 +170,28 @@ def getInputs():
     return output
 
 def physics(inputs):
-    global mariox, marioy, mariodx, mariody
-    if isOnGround(mariox, marioy) and mariody <= 0:
-        mariody = 0
-        marioy = round(marioy)
+    global mariox, marioy, velo_x, velo_y, accel
+    if isOnGround(mariox, marioy - 1) and velo_y <= 0:
+        velo_y = 0
+        # print(marioy)
+        marioy = math.floor(marioy)
 
-    if ("w" in inputs or "space" in inputs) and isOnGround(mariox, marioy): mariody = 4
-    if "a" in inputs: mariodx = -2
-    if "d" in inputs: mariodx = 2
+    if (blockOnLeft(mariox, marioy)) or (blockOnRight(mariox, marioy)):
+        velo_x = 0
+
+    if ("w" in inputs or "space" in inputs) and isOnGround(mariox, marioy): velo_y = 4
+    if "d" in inputs:
+        accel = 0.1
+    elif "a" in inputs:
+        accel = -0.1
+    else:
+        if velo_x < 0:
+            velo_x += accel
+            velo_x = min(velo_x, 0)
+        else:
+            velo_x -= accel
+            velo_x = max(velo_x, 0)
+
     if "f" in inputs: #debug key
         print("first")
         print(coin_rects)
@@ -181,16 +199,18 @@ def physics(inputs):
         print(goomba_rects)
         print("Next")
 
-    if blockOnLeft(mariox, marioy) and mariodx < 0:
-        mariodx = 0
+    velo_x += accel
+    if (accel > 0):
+        velo_x = min(velo_x, PLAYER_MAX_SPEED)
+    else:
+        velo_x = max(velo_x, -PLAYER_MAX_SPEED)
+    print(velo_x, accel)
+    mariox, marioy = mariox + velo_x, marioy + velo_y
+    if (velo_x != 0):
+        accel *= 0.01
 
-    if blockOnRight(mariox, marioy) and mariodx > 0:
-        mariodx = 0
-
-    mariox, marioy = mariox + mariodx, marioy + mariody
-    mariody -= 0.25
-    mariody = max(-size, mariody)
-    mariodx *= 0.125
+    velo_y -= 0.25
+    velo_y = max(-size, velo_y)   
 
 # Generation code goes in init.
 def init():
