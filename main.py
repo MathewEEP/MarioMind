@@ -12,8 +12,8 @@ velo_x, velo_y = 0, 0 # Difference in x and y
 
 sizex, sizey = 20, 20 # Doesn't do anything rn
 
-PLAYER_MAX_SPEED = 1
-accel = 0
+PLAYER_MAX_SPEED = 3
+acceleration = 0
 
 mario = pygame.Rect(width/2, height/2-size, size, size)
 
@@ -170,7 +170,7 @@ def getInputs():
     return output
 
 def physics(inputs):
-    global mariox, marioy, velo_x, velo_y, accel
+    global mariox, marioy, velo_x, velo_y
     if isOnGround(mariox, marioy - 1) and velo_y <= 0:
         velo_y = 0
         # print(marioy)
@@ -180,17 +180,18 @@ def physics(inputs):
         velo_x = 0
 
     if ("w" in inputs or "space" in inputs) and isOnGround(mariox, marioy): velo_y = 4
-    if "d" in inputs:
-        accel = 0.1
-    elif "a" in inputs:
-        accel = -0.1
+    if "a" in inputs:
+        velo_x -= 0.2
+        velo_x = max(velo_x, -PLAYER_MAX_SPEED)
+        print(velo_x)
+    elif "d" in inputs:
+        velo_x += 0.2
+        velo_x = min(velo_x, PLAYER_MAX_SPEED)
     else:
         if velo_x < 0:
-            velo_x += accel
-            velo_x = min(velo_x, 0)
-        else:
-            velo_x -= accel
-            velo_x = max(velo_x, 0)
+            velo_x += 0.02
+        elif velo_x > 0:
+            velo_x -= 0.02
 
     if "f" in inputs: #debug key
         print("first")
@@ -198,16 +199,8 @@ def physics(inputs):
         print("coin above")
         print(goomba_rects)
         print("Next")
-
-    velo_x += accel
-    if (accel > 0):
-        velo_x = min(velo_x, PLAYER_MAX_SPEED)
-    else:
-        velo_x = max(velo_x, -PLAYER_MAX_SPEED)
-    print(velo_x, accel)
+    
     mariox, marioy = mariox + velo_x, marioy + velo_y
-    if (velo_x != 0):
-        accel *= 0.01
 
     velo_y -= 0.25
     velo_y = max(-size, velo_y)   
