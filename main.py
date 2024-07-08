@@ -174,7 +174,7 @@ def physics(inputs):
     if isOnGround(mariox, marioy - 1) and velo_y <= 0:
         velo_y = 0
         # print(marioy)
-        marioy = math.floor(marioy)
+        marioy = round(marioy/size)*size
 
     if (blockOnLeft(mariox, marioy)) or (blockOnRight(mariox, marioy)):
         velo_x = 0
