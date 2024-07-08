@@ -91,7 +91,7 @@ def render_scene(x, y):
             coin_rects.append([coin_rect, entities.index(entity)])
 
 def updateGoombas():
-    speed = 0.125
+    speed = 0.02
     for goomba in entities:
         if goomba[4] == "goomba":
             if abs(goomba[0] - round(goomba[0])) < 1e-5:
