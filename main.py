@@ -12,7 +12,7 @@ velo_x, velo_y = 0, 0 # Difference in x and y
 
 sizex, sizey = 20, 20 # Doesn't do anything rn
 
-PLAYER_MAX_SPEED = 3
+PLAYER_MAX_SPEED = 2
 acceleration = 0
 
 mario = pygame.Rect(width/2, height/2-size, size, size)
@@ -23,6 +23,7 @@ colorWhite = (255, 255, 255)
 colorBlack = (0, 0, 0)
 colorBlue = (125, 206, 235)
 colorBrown = (139, 69, 19)
+colorGreen = (3,252,194)
 colorYellow = (255,211,67)
 colorTan = (210, 180, 140)
 colorRed = (255, 0, 0)
@@ -85,7 +86,6 @@ def render_scene(x, y):
         if entity[4] == "goomba":
             goomba_rect = draw_square(window, colorRed, (entity[0] - x/size, -entity[1] + y/size), size)
             goomba_rects.append([goomba_rect, entities.index(entity)])
-        #print(len(entities))
         elif entity[4] == "coin":
             coin_rect = draw_square(window, colorYellow, (entity[0] - x/size, -entity[1] + y/size), size)
             coin_rects.append([coin_rect, entities.index(entity)])
@@ -118,7 +118,6 @@ def goombaCollision():
             if mario.bottom > goomba_rect.top and mario.top < goomba_rect.top:
                 print("Goomba dead")
                 entities.pop(goomba_rects[i][1])
-                #goomba_rects.remove(goomba_rects[i]) Not needed for some reason?
                 break
             elif goomba_rect.left <= mario.left <= goomba_rect.right and mario.top <= goomba_rect.top <= mario.bottom:
                 print("RIGHT INTERSECTION")
@@ -133,7 +132,6 @@ def coinCollision():
         if coin_rect.colliderect(mario):
             print("Coin collected")
             entities.pop(coin_rects[i][1])
-            #coin_rects.remove(coin_rect[i]) Not needed for some reason automatically removes idk why
             break
 
 
@@ -173,17 +171,17 @@ def physics(inputs):
     global mariox, marioy, velo_x, velo_y
     if isOnGround(mariox, marioy - 1) and velo_y <= 0:
         velo_y = 0
-        # print(marioy)
         marioy = round(marioy/size)*size
 
     if (blockOnLeft(mariox, marioy)) or (blockOnRight(mariox, marioy)):
+        mariox -= velo_x
         velo_x = 0
 
-    if ("w" in inputs or "space" in inputs) and isOnGround(mariox, marioy): velo_y = 4
+    #Mario should be able to jump over 4 blocks
+    if ("w" in inputs or "space" in inputs) and isOnGround(mariox, marioy): velo_y = 5.5
     if "a" in inputs:
         velo_x -= 0.2
         velo_x = max(velo_x, -PLAYER_MAX_SPEED)
-        print(velo_x)
     elif "d" in inputs:
         velo_x += 0.2
         velo_x = min(velo_x, PLAYER_MAX_SPEED)
@@ -193,12 +191,7 @@ def physics(inputs):
         elif velo_x > 0:
             velo_x -= 0.02
 
-    if "f" in inputs: #debug key
-        print("first")
-        print(coin_rects)
-        print("coin above")
-        print(goomba_rects)
-        print("Next")
+    #if "f" in inputs: #debug key
     
     mariox, marioy = mariox + velo_x, marioy + velo_y
 
@@ -222,8 +215,34 @@ def init():
 
         x += 1
 
+def initTest(): 
+    x = -50
+    for j in range(-9, 5):
+        i = -6
+        add_block(i, j, colorBrown)
+    for j in range(-5, 5):
+        i = 150 
+        add_block(i, j, colorBrown)
+    for i in range(-5, 150):
+        #j = int(math.sin(i/6) * 3)
+        j = -1
+        #if x % y == 0: #executes every y blocks
+        if x % 13 == 0:
+            add_entity(i, j + 2, i > 0, "block", "coin") 
+        if x % 15 == 0: 
+            add_entity(i + 1, j + 1, i > 0, "mob", "goomba")
+            add_block(i, j + 1, colorGreen)
+            add_block(i, j + 2, colorGreen)
+            add_block(i, j + 3, colorGreen)
+            add_block(i, j + 4, colorGreen)
+        while j >= -2: 
+            add_block(i, j, colorBrown)
+            j -= 1
 
-init()
+        x += 1
+
+
+initTest()
 
 while not gameEnded:
     pygame.time.delay(int(1000/60))
