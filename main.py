@@ -35,11 +35,19 @@ gameEnded = False
 clock = pygame.time.Clock()
 
 blocks = {}
+flag = {}
+
+end_x = 100 # start of the ending platform/ end of main level;
+end_dist = 10 # how wide ending platform is
+flag_height = 7 # how tall flag is 
+flag_x = end_x + (end_dist * 0.75)
 
 entities = []
 goombas = []
 coins = []
 
+def add_flag(x, y, color):
+    if not (x, y) in flag: flag[(x, y)] = [color]
 def add_block(x, y, color):
     if not (x, y) in blocks: blocks[(x, y)] = [color]
 
@@ -61,6 +69,21 @@ def draw_square(surface, color, top_left, size):
     pygame.draw.rect(surface, color, pygame.Rect(top_left[0]*size+width/2, top_left[1]*size+height/2, size, size))
     return rect
 
+def draw_flag(surface, color, top_left, size):
+    global width, height
+
+    pygame.draw.rect(surface, color, pygame.Rect(top_left[0]*size+width/2, top_left[1]*size+height/2, size/5, size))
+
+def draw_triangle(surface, color, first, second, third):
+    global width, height
+
+    pygame.draw.polygon(surface, color, ((first[0]*size + width/2, first[1]*size + height/2), (second[0]*size + width/2, second[1]*size + height/2), (third[0]*size + width/2, third[1]*size + height/2)))
+
+
+def draw_circle(surface, color, center, radius):
+    global width, height
+    pygame.draw.circle(surface, color, (center[0]*size + width/2, center[1]*size + height/2), radius)
+
 def draw_square_rect(surface, color, rect):
     global width, height
     pygame.draw.rect(surface, color, rect)
@@ -73,12 +96,20 @@ def render_scene(x, y):
     for block in blocks:
         draw_square(window, blocks[block][0], (block[0] - x/size, -block[1] + y/size), size)
 
-    #Entity rendering
-    #...
+    # Render flag
+    # Pole
+    for line in flag:
+        draw_flag(window, flag[line][0], (line[0] - x/size, -line[1] + y/size), size)
+    # Flag triangle
+    draw_triangle(window, colorGreen, (flag_x - x/size, -(flag_height - 2) + y/size), (flag_x - x/size, -(flag_height - 1.25) + y/size), (flag_x - x/size - 1, -(flag_height - 1.25) + y/size))
+    # Circle on top
+    draw_circle(window, colorGreen, (flag_x + 0.1 - x/size, -(flag_height - 1) + y/size), 4)
 
     # Mario Rendering
     global mario
     mario = draw_square(window, colorTan, (mariox - x/size, -marioy + y/size), size)
+
+    #Entity rendering
 
     # Goomba Rendering / Goombas are red
     global goomba_rects
@@ -196,8 +227,7 @@ def physics(inputs):
         if velo_x < 0 and not velo_x > 0:
             velo_x += 0.01
         elif velo_x > 0 and not velo_x < 0:
-            velo_x -= 0.01
-
+            velo_x -= 0.01 
     #if "f" in inputs: #debug key
     
     mariox, marioy = mariox + velo_x, marioy + velo_y
@@ -226,13 +256,14 @@ def init():
 
 def initTest(): 
     x = -50
-    for j in range(-9, 5):
-        i = -6
-        add_block(i, j, colorBrown)
-    for j in range(-5, 5):
-        i = 150 
-        add_block(i, j, colorBrown)
-    for i in range(-5, 150):
+
+    for i in range(-width, 0):
+        j = -1
+        while j >= -2: 
+            add_block(i, j, colorBrown)
+            j -= 1
+
+    for i in range(0, end_x):
         #j = int(math.sin(i/6) * 3)
         j = -1
         #if x % y == 0: #executes every y blocks
@@ -250,6 +281,18 @@ def initTest():
 
         x += 1
 
+    # ending area
+    for i in range(end_x, end_x + end_dist):
+        j = -1
+        while j >= -2:
+            add_block(i, j, colorGreen)
+            j -= 1
+
+    # flag
+    # floor y value is -2
+    add_block(flag_x - 0.45, 0, colorBrown)
+    for i in range(1, flag_height):
+        add_flag(flag_x, i, colorRed)
 
 initTest()
 
