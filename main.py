@@ -1,6 +1,8 @@
 import pygame
 import sys
 import math
+from gameObject import gameObject
+from goomba import goomba
 
 pygame.init()
 size = 16 # Size of squares
@@ -12,10 +14,10 @@ velo_x, velo_y = 0, 0 # Difference in x and y
 
 sizex, sizey = 20, 20 # Doesn't do anything rn
 
-PLAYER_MAX_SPEED = 2
+PLAYER_MAX_SPEED = 0.3
 acceleration = 0
 
-mario = pygame.Rect(width/2, height/2-size, size, size)
+camerax, cameray = 0, 0
 
 window = pygame.display.set_mode((width, height))
 
@@ -33,7 +35,8 @@ clock = pygame.time.Clock()
 
 blocks = {}
 
-entities = [] # Goombas for now. each entry is (x, y, direction)
+entities = []
+goombas = []
 
 def add_block(x, y, color):
     if not (x, y) in blocks: blocks[(x, y)] = [color]
@@ -72,7 +75,8 @@ def render_scene(x, y):
     #...
 
     # Mario Rendering
-    pygame.draw.rect(window, colorTan, mario)
+    global mario
+    mario = draw_square(window, colorTan, (mariox - x/size, -marioy + y/size), size)
 
     # Goomba Rendering / Goombas are red
     global goomba_rects
@@ -82,32 +86,33 @@ def render_scene(x, y):
     global coin_rects
     coin_rects = [] # Rect objects for each coin
 
+    for goomba in goombas:
+        goomba_rect = draw_square(window, colorRed, (goomba.x - x/size, -goomba.y + y/size), size)
+        goomba_rects.append([goomba_rect, goombas.index(goomba)])
+
     for entity in entities:
-        if entity[4] == "goomba":
-            goomba_rect = draw_square(window, colorRed, (entity[0] - x/size, -entity[1] + y/size), size)
-            goomba_rects.append([goomba_rect, entities.index(entity)])
-        elif entity[4] == "coin":
+        if entity[4] == "coin":
             coin_rect = draw_square(window, colorYellow, (entity[0] - x/size, -entity[1] + y/size), size)
             coin_rects.append([coin_rect, entities.index(entity)])
 
 def updateGoombas():
-    speed = 0.02
-    for goomba in entities:
-        if goomba[4] == "goomba":
-            if abs(goomba[0] - round(goomba[0])) < 1e-5:
-                if not (goomba[0] - 1, goomba[1] - 1) in blocks and goomba[2]:
-                    goomba[2] = False
-                elif not (goomba[0] + 1, goomba[1] - 1) in blocks and not goomba[2]:
-                    goomba[2] = True
-                elif (goomba[0] - 1, goomba[1]) in blocks and goomba[2]:
-                    goomba[2] = False
-                elif (goomba[0] + 1, goomba[1]) in blocks and not goomba[2]:
-                    goomba[2] = True
-
-            if (goomba[2]): # go left
-                goomba[0] -= speed
-            else:   #go right
-                goomba[0] += speed
+     for goomba in goombas:
+        goomba.update()
+        if goomba.left:
+            goomba.dx = -goomba.speed
+        else:
+            goomba.dx = goomba.speed
+        #print(f"goomba at {goomba.x/size, goomba.y/size}")
+        #print(f"goomba is on ground: {isOnGround(goomba.x, goomba.y)}")
+        if (math.ceil(goomba.x-1), round(goomba.y)) in blocks and goomba.left:
+            goomba.left = False
+        elif (math.floor(goomba.x+1), round(goomba.y)) in blocks and not goomba.left:
+            goomba.left = True
+        if (round(goomba.x), math.floor(goomba.y)) in blocks and goomba.dy < 0:
+                goomba.y = math.floor(goomba.y)+1
+                goomba.dy = 0
+        if not(round(goomba.x), math.floor(goomba.y-0.2)) in blocks:
+                goomba.dy -= 0.02
 
 
 def goombaCollision():
@@ -117,7 +122,7 @@ def goombaCollision():
         if goomba_rect.colliderect(mario):
             if mario.bottom > goomba_rect.top and mario.top < goomba_rect.top:
                 print("Goomba dead")
-                entities.pop(goomba_rects[i][1])
+                goombas.pop(goomba_rects[i][1])
                 break
             elif goomba_rect.left <= mario.left <= goomba_rect.right and mario.top <= goomba_rect.top <= mario.bottom:
                 print("RIGHT INTERSECTION")
@@ -132,21 +137,20 @@ def coinCollision():
         if coin_rect.colliderect(mario):
             print("Coin collected")
             entities.pop(coin_rects[i][1])
+            #coin_rects.reawmove(coin_rect[i]) Not needed for i think some reason automatically removes idk why
             break
 
-
-
 def isOnGround(x, y):
-    x, y = round(x/size), math.ceil(y/size)
+    x, y = round(x), math.ceil(y)-1
     return (x, y) in blocks
 
 def blockOnLeft(x, y):
-    x, y = math.ceil(x/size)-1, round(y/size)
-    return (x, y+1) in blocks
+    x, y = math.ceil(x)-1, round(y)
+    return (x, y) in blocks
 
 def blockOnRight(x, y):
-    x, y = math.floor(x/size)+1, round(y/size)
-    return (x, y+1) in blocks
+    x, y = math.floor(x)+1, round(y)
+    return (x, y) in blocks
 
 
 ### From this point we should turn this into a class for goombas and stuff. Mario's should be kept as-is though.
@@ -167,35 +171,39 @@ def getInputs():
 
     return output
 
+def camera():
+    global camerax, cameray
+    if mariox * size > camerax + width/4:
+        camerax = mariox * size - width/4
+        
 def physics(inputs):
     global mariox, marioy, velo_x, velo_y
-    if isOnGround(mariox, marioy - 1) and velo_y <= 0:
+    if isOnGround(mariox, marioy) and velo_y <= 0:
         velo_y = 0
-        marioy = round(marioy/size)*size
-
-    if (blockOnLeft(mariox, marioy)) or (blockOnRight(mariox, marioy)):
-        mariox -= velo_x
-        velo_x = 0
+        marioy = round(marioy)
 
     #Mario should be able to jump over 4 blocks
-    if ("w" in inputs or "space" in inputs) and isOnGround(mariox, marioy): velo_y = 5.5
+    if ("w" in inputs or "space" in inputs) and isOnGround(mariox, marioy): velo_y = 0.4
     if "a" in inputs:
-        velo_x -= 0.2
+        velo_x -= 0.01
         velo_x = max(velo_x, -PLAYER_MAX_SPEED)
     elif "d" in inputs:
-        velo_x += 0.2
+        velo_x += 0.01
         velo_x = min(velo_x, PLAYER_MAX_SPEED)
     else:
         if velo_x < 0:
-            velo_x += 0.02
+            velo_x += 0.01
         elif velo_x > 0:
-            velo_x -= 0.02
+            velo_x -= 0.01
 
     #if "f" in inputs: #debug key
     
     mariox, marioy = mariox + velo_x, marioy + velo_y
 
-    velo_y -= 0.25
+    if (blockOnLeft(mariox, marioy)) or (blockOnRight(mariox, marioy)) or ((mariox * size) <= (camerax - width/2)):
+        velo_x = 0
+
+    velo_y -= 0.025
     velo_y = max(-size, velo_y)   
 
 # Generation code goes in init.
@@ -206,13 +214,11 @@ def init():
         #if x % y == 0: #executes every y blocks
         if x % 13 == 0:
             add_entity(i, j + 2, i > 0, "block", "coin")
-        if x % 15 == 0: # place goomba every 15 blocks
-            add_entity(i, j + 1, i > 0, "mob", "goomba") # one tile above the ground
-            #add_entity(i, j + 2, i > 0, "block", "coin")
+        if x % 16 == 0: # place goomba every 15 blocks
+            goombas.append(goomba(i, j + 1, i > 0))
         while j >= -9:
             add_block(i, j, colorBrown)
             j -= 1
-
         x += 1
 
 def initTest(): 
@@ -230,11 +236,11 @@ def initTest():
         if x % 13 == 0:
             add_entity(i, j + 2, i > 0, "block", "coin") 
         if x % 15 == 0: 
-            add_entity(i + 1, j + 1, i > 0, "mob", "goomba")
-            add_block(i, j + 1, colorGreen)
-            add_block(i, j + 2, colorGreen)
-            add_block(i, j + 3, colorGreen)
-            add_block(i, j + 4, colorGreen)
+            goombas.append(goomba(i+3, j + 1, i > 0))
+            add_block(i+1, j + 1, colorGreen)
+            add_block(i+1, j + 2, colorGreen)
+            add_block(i+1, j + 3, colorGreen)
+            add_block(i+1, j + 4, colorGreen)
         while j >= -2: 
             add_block(i, j, colorBrown)
             j -= 1
@@ -246,7 +252,8 @@ initTest()
 
 while not gameEnded:
     pygame.time.delay(int(1000/60))
-    render_scene(mariox, marioy) # mario is always centered
+    camera()
+    render_scene(camerax, cameray) # mario is always centered
     pygame.display.flip()
     inputs = getInputs()
     physics(inputs)
