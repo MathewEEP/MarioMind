@@ -173,8 +173,8 @@ def getInputs():
 
 def camera():
     global camerax, cameray
-    if mariox * size > camerax + width/4:
-        camerax = mariox * size - width/4
+    if mariox * size > camerax:
+        camerax = mariox * size - width/100
         
 def physics(inputs):
     global mariox, marioy, velo_x, velo_y
