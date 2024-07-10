@@ -25,8 +25,8 @@ colorWhite = (255, 255, 255)
 colorBlack = (0, 0, 0)
 colorBlue = (125, 206, 235)
 colorBrown = (139, 69, 19)
-colorGreen = (3,252,194)
-colorYellow = (255,211,67)
+colorGreen = (3, 252, 194)
+colorYellow = (255, 211, 67)
 colorTan = (210, 180, 140)
 colorRed = (255, 0, 0)
 
@@ -34,9 +34,18 @@ gameEnded = False
 clock = pygame.time.Clock()
 
 blocks = {}
+flag = {}
+
+end_x = 3 # start of the ending platform
+end_dist = 10 # how wide ending platform is
+flag_height = 7 # how tall flag is 
+flag_x = end_x + (end_dist * 0.75)
 
 entities = []
 goombas = []
+
+def add_flag(x, y, color):
+    if not (x, y) in flag: flag[(x, y)] = [color]
 
 def add_block(x, y, color):
     if not (x, y) in blocks: blocks[(x, y)] = [color]
@@ -59,6 +68,21 @@ def draw_square(surface, color, top_left, size):
     pygame.draw.rect(surface, color, pygame.Rect(top_left[0]*size+width/2, top_left[1]*size+height/2, size, size))
     return rect
 
+def draw_flag(surface, color, top_left, size):
+    global width, height
+
+    pygame.draw.rect(surface, color, pygame.Rect(top_left[0]*size+width/2, top_left[1]*size+height/2, size/5, size))
+
+def draw_triangle(surface, color, first, second, third):
+    global width, height
+
+    pygame.draw.polygon(surface, color, ((first[0]*size + width/2, first[1]*size + height/2), (second[0]*size + width/2, second[1]*size + height/2), (third[0]*size + width/2, third[1]*size + height/2)))
+
+
+def draw_circle(surface, color, center, radius):
+    global width, height
+    pygame.draw.circle(surface, color, (center[0]*size + width/2, center[1]*size + height/2), radius)
+
 def draw_square_rect(surface, color, rect):
     global width, height
     pygame.draw.rect(surface, color, rect)
@@ -70,6 +94,15 @@ def render_scene(x, y):
     draw_background(colorBlue)
     for block in blocks:
         draw_square(window, blocks[block][0], (block[0] - x/size, -block[1] + y/size), size)
+
+    # Render flag
+    # Pole
+    for line in flag:
+        draw_flag(window, flag[line][0], (line[0] - x/size, -line[1] + y/size), size)
+    # Flag triangle
+    draw_triangle(window, colorGreen, (flag_x - x/size, -(flag_height - 2) + y/size), (flag_x - x/size, -(flag_height - 1.25) + y/size), (flag_x - x/size - 1, -(flag_height - 1.25) + y/size))
+    # Circle on top
+    draw_circle(window, colorGreen, (flag_x + 0.1 - x/size, -(flag_height - 1) + y/size), 4)
 
     #Entity rendering
     #...
@@ -109,10 +142,10 @@ def updateGoombas():
         elif (math.floor(goomba.x+1), round(goomba.y)) in blocks and not goomba.left:
             goomba.left = True
         if (round(goomba.x), math.floor(goomba.y)) in blocks and goomba.dy < 0:
-                goomba.y = math.floor(goomba.y)+1
-                goomba.dy = 0
+            goomba.y = math.floor(goomba.y)+1
+            goomba.dy = 0
         if not(round(goomba.x), math.floor(goomba.y-0.2)) in blocks:
-                goomba.dy -= 0.02
+            goomba.dy -= 0.02
 
 
 def goombaCollision():
@@ -226,13 +259,14 @@ def init():
 
 def initTest(): 
     x = -50
-    for j in range(-9, 5):
-        i = -6
-        add_block(i, j, colorBrown)
-    for j in range(-5, 5):
-        i = 150 
-        add_block(i, j, colorBrown)
-    for i in range(-5, 150):
+    
+    # for j in range(-9, 5):
+    #     i = -6
+    #     add_block(i, j, colorBrown)
+    # for j in range(-5, 5):
+    #     i = 150 
+    #     add_block(i, j, colorBrown)
+    for i in range(-5, end_x):
         #j = int(math.sin(i/6) * 3)
         j = -1
         #if x % y == 0: #executes every y blocks
@@ -250,6 +284,19 @@ def initTest():
 
         x += 1
 
+    # ending area
+    for i in range(end_x, end_x + end_dist):
+        j = -1
+        while j >= -2:
+            add_block(i, j, colorGreen)
+            j -= 1
+
+    # flag
+
+    # floor y value is -2
+    add_block(flag_x - 0.45, 0, colorBrown)
+    for i in range(1, flag_height):
+        add_flag(flag_x, i, colorRed)
 
 initTest()
 
