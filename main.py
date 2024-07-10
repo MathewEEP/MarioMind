@@ -26,8 +26,8 @@ colorWhite = (255, 255, 255)
 colorBlack = (0, 0, 0)
 colorBlue = (125, 206, 235)
 colorBrown = (139, 69, 19)
-colorGreen = (3,252,194)
-colorYellow = (255,211,67)
+colorGreen = (3, 252, 194)
+colorYellow = (255, 211, 67)
 colorTan = (210, 180, 140)
 colorRed = (255, 0, 0)
 
@@ -45,6 +45,9 @@ flag_x = end_x + (end_dist * 0.75)
 entities = []
 goombas = []
 coins = []
+
+def add_flag(x, y, color):
+    if not (x, y) in flag: flag[(x, y)] = [color]
 
 def add_flag(x, y, color):
     if not (x, y) in flag: flag[(x, y)] = [color]
@@ -84,6 +87,21 @@ def draw_circle(surface, color, center, radius):
     global width, height
     pygame.draw.circle(surface, color, (center[0]*size + width/2, center[1]*size + height/2), radius)
 
+def draw_flag(surface, color, top_left, size):
+    global width, height
+
+    pygame.draw.rect(surface, color, pygame.Rect(top_left[0]*size+width/2, top_left[1]*size+height/2, size/5, size))
+
+def draw_triangle(surface, color, first, second, third):
+    global width, height
+
+    pygame.draw.polygon(surface, color, ((first[0]*size + width/2, first[1]*size + height/2), (second[0]*size + width/2, second[1]*size + height/2), (third[0]*size + width/2, third[1]*size + height/2)))
+
+
+def draw_circle(surface, color, center, radius):
+    global width, height
+    pygame.draw.circle(surface, color, (center[0]*size + width/2, center[1]*size + height/2), radius)
+
 def draw_square_rect(surface, color, rect):
     global width, height
     pygame.draw.rect(surface, color, rect)
@@ -104,6 +122,17 @@ def render_scene(x, y):
     draw_triangle(window, colorGreen, (flag_x - x/size, -(flag_height - 2) + y/size), (flag_x - x/size, -(flag_height - 1.25) + y/size), (flag_x - x/size - 1, -(flag_height - 1.25) + y/size))
     # Circle on top
     draw_circle(window, colorGreen, (flag_x + 0.1 - x/size, -(flag_height - 1) + y/size), 4)
+    # Render flag
+    # Pole
+    for line in flag:
+        draw_flag(window, flag[line][0], (line[0] - x/size, -line[1] + y/size), size)
+    # Flag triangle
+    draw_triangle(window, colorGreen, (flag_x - x/size, -(flag_height - 2) + y/size), (flag_x - x/size, -(flag_height - 1.25) + y/size), (flag_x - x/size - 1, -(flag_height - 1.25) + y/size))
+    # Circle on top
+    draw_circle(window, colorGreen, (flag_x + 0.1 - x/size, -(flag_height - 1) + y/size), 4)
+
+    #Entity rendering
+    #...
 
     # Mario Rendering
     global mario
@@ -142,10 +171,10 @@ def updateGoombas():
         elif (math.floor(goomba.x+1), round(goomba.y)) in blocks and not goomba.left:
             goomba.left = True
         if (round(goomba.x), math.floor(goomba.y)) in blocks and goomba.dy < 0:
-                goomba.y = math.floor(goomba.y)+1
-                goomba.dy = 0
+            goomba.y = math.floor(goomba.y)+1
+            goomba.dy = 0
         if not(round(goomba.x), math.floor(goomba.y-0.2)) in blocks:
-                goomba.dy -= 0.02
+            goomba.dy -= 0.02
 
 
 def goombaCollision():
