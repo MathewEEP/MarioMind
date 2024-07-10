@@ -179,11 +179,12 @@ def camera():
 def physics(inputs):
     global mariox, marioy, velo_x, velo_y
     if isOnGround(mariox, marioy) and velo_y <= 0:
+        marioy -= velo_y
         velo_y = 0
         marioy = round(marioy)
 
     #Mario should be able to jump over 4 blocks
-    if ("w" in inputs or "space" in inputs) and isOnGround(mariox, marioy): velo_y = 0.4
+    if ("w" in inputs or "space" in inputs) and isOnGround(mariox, marioy): velo_y = 0.425
     if "a" in inputs:
         velo_x -= 0.01
         velo_x = max(velo_x, -PLAYER_MAX_SPEED)
@@ -191,9 +192,9 @@ def physics(inputs):
         velo_x += 0.01
         velo_x = min(velo_x, PLAYER_MAX_SPEED)
     else:
-        if velo_x < 0:
+        if velo_x < 0 and not velo_x > 0:
             velo_x += 0.01
-        elif velo_x > 0:
+        elif velo_x > 0 and not velo_x < 0:
             velo_x -= 0.01
 
     #if "f" in inputs: #debug key
@@ -201,7 +202,9 @@ def physics(inputs):
     mariox, marioy = mariox + velo_x, marioy + velo_y
 
     if (blockOnLeft(mariox, marioy)) or (blockOnRight(mariox, marioy)) or ((mariox * size) <= (camerax - width/2)):
+        mariox -= velo_x
         velo_x = 0
+
 
     velo_y -= 0.025
     velo_y = max(-size, velo_y)   
