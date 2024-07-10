@@ -14,7 +14,7 @@ velo_x, velo_y = 0, 0 # Difference in x and y
 
 sizex, sizey = 20, 20 # Doesn't do anything rn
 
-PLAYER_MAX_SPEED = 0.3
+PLAYER_MAX_SPEED = 0.2
 acceleration = 0
 
 camerax, cameray = 0, 0
