@@ -2,7 +2,7 @@ import pygame
 import sys
 import math
 from gameObject import gameObject
-from goomba import goomba
+from entities.goomba import goomba
 
 pygame.init()
 size = 16 # Size of squares
