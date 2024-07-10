@@ -3,6 +3,7 @@ import sys
 import math
 from gameObject import gameObject
 from entities.goomba import goomba
+from entities.coin import coin
 
 pygame.init()
 size = 16 # Size of squares
@@ -37,6 +38,7 @@ blocks = {}
 
 entities = []
 goombas = []
+coins = []
 
 def add_block(x, y, color):
     if not (x, y) in blocks: blocks[(x, y)] = [color]
@@ -87,13 +89,13 @@ def render_scene(x, y):
     coin_rects = [] # Rect objects for each coin
 
     for goomba in goombas:
-        goomba_rect = draw_square(window, colorRed, (goomba.x - x/size, -goomba.y + y/size), size)
+        goomba_rect = draw_square(window, colorRed, (goomba.x - x/size, - goomba.y + y/size), size)
         goomba_rects.append([goomba_rect, goombas.index(goomba)])
 
-    for entity in entities:
-        if entity[4] == "coin":
-            coin_rect = draw_square(window, colorYellow, (entity[0] - x/size, -entity[1] + y/size), size)
-            coin_rects.append([coin_rect, entities.index(entity)])
+    for coin in coins:
+        coin_rect = draw_square(window, colorYellow, (coin.x - x/size, - coin.y + y/size), size)
+        coin_rects.append([coin_rect, coins.index(coin)])
+
 
 def updateGoombas():
      for goomba in goombas:
@@ -136,8 +138,7 @@ def coinCollision():
         coin_rect = coin_rects[i][0]
         if coin_rect.colliderect(mario):
             print("Coin collected")
-            entities.pop(coin_rects[i][1])
-            #coin_rects.reawmove(coin_rect[i]) Not needed for i think some reason automatically removes idk why
+            coins.pop(coin_rects[i][1])
             break
 
 def isOnGround(x, y):
@@ -205,7 +206,6 @@ def physics(inputs):
         mariox -= velo_x
         velo_x = 0
 
-
     velo_y -= 0.025
     velo_y = max(-size, velo_y)   
 
@@ -237,7 +237,7 @@ def initTest():
         j = -1
         #if x % y == 0: #executes every y blocks
         if x % 13 == 0:
-            add_entity(i, j + 2, i > 0, "block", "coin") 
+            coins.append(coin(i, j + 2, i > 0)) 
         if x % 15 == 0: 
             goombas.append(goomba(i+3, j + 1, i > 0))
             add_block(i+1, j + 1, colorGreen)
