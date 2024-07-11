@@ -2,6 +2,7 @@ import pygame
 import sys
 import math
 from gameObject import gameObject
+from entities.koopa import koopa
 from entities.goomba import goomba
 from entities.coin import coin
 
@@ -42,7 +43,7 @@ end_dist = 10 # how wide ending platform is
 flag_height = 7 # how tall flag is 
 flag_x = end_x + (end_dist * 0.75)
 
-entities = []
+koopas = []
 goombas = []
 coins = []
 
@@ -53,11 +54,6 @@ def add_flag(x, y, color):
     if not (x, y) in flag: flag[(x, y)] = [color]
 def add_block(x, y, color):
     if not (x, y) in blocks: blocks[(x, y)] = [color]
-
-def add_entity(x, y, left, entity_type, entity):
-    # left is direction
-    if not (x, y) in entities:
-        entities.append([x, y, left, entity_type, entity])
 
 def delete_block(x, y):
     if (x, y) in blocks: del blocks[(x, y)]
@@ -140,6 +136,10 @@ def render_scene(x, y):
 
     #Entity rendering
 
+    # Koopa Rendering / Koopas are red
+    global koopa_rects
+    koopa_rects = [] # Rect objects for each goomba
+
     # Goomba Rendering / Goombas are red
     global goomba_rects
     goomba_rects = [] # Rect objects for each goomba
@@ -147,6 +147,10 @@ def render_scene(x, y):
     # Coin Rendering / Coins are Yellow
     global coin_rects
     coin_rects = [] # Rect objects for each coin
+
+    for koopa in koopas:
+        koopa_rect = draw_square(window, colorGreen, (koopa.x - x/size, - koopa.y + y/size), size)
+        koopa_rects.append([koopa_rect, koopas.index(koopa)])
 
     for goomba in goombas:
         goomba_rect = draw_square(window, colorRed, (goomba.x - x/size, - goomba.y + y/size), size)
@@ -176,7 +180,40 @@ def updateGoombas():
         if not(round(goomba.x), math.floor(goomba.y-0.2)) in blocks:
             goomba.dy -= 0.02
 
+def updateKoopas():
+    for koopa in koopas:
+        koopa.update()
+        if koopa.left:
+            koopa.dx = -koopa.speed
+        else:
+            koopa.dx = koopa.speed
+        #print(f"koopa at {koopa.x/size, koopa.y/size}")
+        #print(f"koopa is on ground: {isOnGround(koopa.x, koopa.y)}")
+        if (math.ceil(koopa.x-1), round(koopa.y)) in blocks and koopa.left:
+            koopa.left = False
+        elif (math.floor(koopa.x+1), round(koopa.y)) in blocks and not koopa.left:
+            koopa.left = True
+        if (round(koopa.x), math.floor(koopa.y)) in blocks and koopa.dy < 0:
+            koopa.y = math.floor(koopa.y)+1
+            koopa.dy = 0
+        if not(round(koopa.x), math.floor(koopa.y-0.2)) in blocks:
+            koopa.dy -= 0.02
 
+def koopaCollision():
+    global gameEnded
+    for i in range(len(koopa_rects)):
+        koopa_rect = koopa_rects[i][0]
+        if koopa_rect.colliderect(mario):
+            if mario.bottom > koopa_rect.top and mario.top < koopa_rect.top:
+                print("Koopa dead")
+                koopas.pop(koopa_rects[i][1])
+                break
+            elif koopa_rect.left <= mario.left <= koopa_rect.right and mario.top <= koopa_rect.top <= mario.bottom:
+                print("RIGHT INTERSECTION")
+                gameEnded = True
+            elif mario.left <= koopa_rect.left <= mario.right and mario.top <= koopa_rect.top <= mario.bottom:
+                print("LEFT INTERSECTION")
+                gameEnded = True
 
 def goombaCollision():
     global gameEnded
@@ -301,6 +338,7 @@ def initTest():
             coins.append(coin(i, j + 2, i > 0)) 
         if x % 15 == 0: 
             goombas.append(goomba(i+3, j + 1, i > 0))
+            koopas.append(koopa(i+4, j+1, i > 0))
             add_block(i+1, j + 1, colorGreen)
             add_block(i+1, j + 2, colorGreen)
             add_block(i+1, j + 3, colorGreen)
@@ -333,6 +371,10 @@ while not gameEnded:
     pygame.display.flip()
     inputs = getInputs()
     physics(inputs)
+    
+    koopaCollision()
     goombaCollision()
     coinCollision()
+
+    updateKoopas()
     updateGoombas()
