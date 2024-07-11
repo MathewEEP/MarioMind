@@ -177,6 +177,7 @@ def updateGoombas():
             goomba.dy -= 0.02
 
 
+
 def goombaCollision():
     global gameEnded
     for i in range(len(goomba_rects)):
