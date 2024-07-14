@@ -261,7 +261,7 @@ def getInputs():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-    #CPU thing goes here
+    
     keys = pygame.key.get_pressed()
     output = []
     if keys[pygame.K_w]: output.append("w")
