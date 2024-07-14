@@ -170,7 +170,7 @@ def render_scene(x, y):
 
     for powerup in powerupBlocks:
         powerup_rect = draw_square(window, colorPink, (coin.x - x/size, - coin.y + y/size), size)
-        powerup_rects.append([powerup_rect, powerupBlocks.index(powerupBlock)])
+        powerup_rects.append([powerup_rect, powerupBlocks.index(powerup)])
 
 
 def updateGoombas():
@@ -361,7 +361,7 @@ def generateMap():
         if random.randint(1, 20) == 1:
             coins.append(coin(block[0], block[1] + 2, random.randint(0, 2)))
         if random.randint(1, 3) == 1:
-            powerupBlocks.append(powerupBlock(block[0], block[1] + 2, random.randint(0, 2)))
+            powerupBlocks.append(powerupBlock(block[0], block[1] + 2))
 
 generateMap()
 
