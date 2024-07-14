@@ -169,7 +169,7 @@ def render_scene(x, y):
         coin_rects.append([coin_rect, coins.index(coin)])
 
     for powerup in powerupBlocks:
-        powerup_rect = draw_square(window, colorPink, (coin.x - x/size, - coin.y + y/size), size)
+        powerup_rect = draw_square(window, colorPink, (powerup.x - x/size, - powerup.y + y/size), size)
         powerup_rects.append([powerup_rect, powerupBlocks.index(powerup)])
 
 
