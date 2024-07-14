@@ -325,7 +325,7 @@ def physics(inputs):
 def generateMap():
     gaps = []
     platformBlocks = []
-    for x in range(-50, 148):
+    for x in range(0, 148):
         if random.randint(1, 20) == 1:
             gaps.append(x)
             gaps.append(x+1)
@@ -361,7 +361,7 @@ def generateMap():
         if random.randint(1, 20) == 1:
             coins.append(coin(block[0], block[1] + 2, random.randint(0, 2)))
         if random.randint(1, 3) == 1:
-            powerupBlocks.append(powerupBlock(block[0], block[1] + 2))
+            powerupBlocks.append(powerupBlock(block[0], block[1] + 1))
 
 generateMap()
 
