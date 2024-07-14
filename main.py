@@ -360,7 +360,7 @@ def generateMap():
             koopas.append(koopa(block[0], block[1] + 2, random.randint(0, 2)))
         if random.randint(1, 20) == 1:
             coins.append(coin(block[0], block[1] + 2, random.randint(0, 2)))
-        if random.randint(1, 3) == 1:
+        if random.randint(1, 2) == 1:
             powerupBlocks.append(powerupBlock(block[0], block[1] + 2))
 
 generateMap()
