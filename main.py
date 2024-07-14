@@ -47,6 +47,8 @@ flag_x = end_x + (end_dist * 0.75)
 koopas = []
 goombas = []
 coins = []
+powerupBlocks = []
+
 
 def add_flag(x, y, color):
     if not (x, y) in flag: flag[(x, y)] = [color]
@@ -169,8 +171,7 @@ def updateGoombas():
             goomba.dx = -goomba.speed
         else:
             goomba.dx = goomba.speed
-        #print(f"goomba at {goomba.x/size, goomba.y/size}")
-        #print(f"goomba is on ground: {isOnGround(goomba.x, goomba.y)}")
+        
         if (math.ceil(goomba.x-1), round(goomba.y)) in blocks and goomba.left:
             goomba.left = False
         elif (math.floor(goomba.x+1), round(goomba.y)) in blocks and not goomba.left:
@@ -188,8 +189,7 @@ def updateKoopas():
             koopa.dx = -koopa.speed
         else:
             koopa.dx = koopa.speed
-        #print(f"koopa at {koopa.x/size, koopa.y/size}")
-        #print(f"koopa is on ground: {isOnGround(koopa.x, koopa.y)}")
+        
         if (math.ceil(koopa.x-1), round(koopa.y)) in blocks and koopa.left:
             koopa.left = False
         elif (math.floor(koopa.x+1), round(koopa.y)) in blocks and not koopa.left:
@@ -210,10 +210,10 @@ def koopaCollision():
                 koopas.pop(koopa_rects[i][1])
                 break
             elif koopa_rect.left <= mario.left <= koopa_rect.right and mario.top <= koopa_rect.top <= mario.bottom:
-                print("RIGHT INTERSECTION")
+                print("Koopa - RIGHT INTERSECTION")
                 gameEnded = True
             elif mario.left <= koopa_rect.left <= mario.right and mario.top <= koopa_rect.top <= mario.bottom:
-                print("LEFT INTERSECTION")
+                print("Koopa - LEFT INTERSECTION")
                 gameEnded = True
 
 def goombaCollision():
@@ -226,10 +226,10 @@ def goombaCollision():
                 goombas.pop(goomba_rects[i][1])
                 break
             elif goomba_rect.left <= mario.left <= goomba_rect.right and mario.top <= goomba_rect.top <= mario.bottom:
-                print("RIGHT INTERSECTION")
+                print("Goomba - RIGHT INTERSECTION")
                 gameEnded = True
             elif mario.left <= goomba_rect.left <= mario.right and mario.top <= goomba_rect.top <= mario.bottom:
-                print("LEFT INTERSECTION")
+                print("Goomba - LEFT INTERSECTION")
                 gameEnded = True
 
 def coinCollision():
@@ -256,8 +256,6 @@ def blockOnTop(x, y):
     x, y = round(x), math.ceil(y)
     return (x, y) in blocks
 
-
-### From this point we should turn this into a class for goombas and stuff. Mario's should be kept as-is though.
 def getInputs():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -281,7 +279,11 @@ def camera():
         camerax = mariox * size
         
 def physics(inputs):
-    global mariox, marioy, velo_x, velo_y
+    global mariox, marioy, velo_x, velo_y, gameEnded
+
+    if marioy < -10: # mario is in the void
+        gameEnded = True
+
     if (isOnGround(mariox, marioy) and velo_y <= 0) or blockOnTop(mariox, marioy):
         marioy -= velo_y
         velo_y = 0
@@ -357,7 +359,7 @@ generateMap()
 while not gameEnded:
     pygame.time.delay(int(1000/60))
     camera()
-    render_scene(camerax, cameray) # mario is always centered
+    render_scene(camerax, cameray)
     pygame.display.flip()
     inputs = getInputs()
     physics(inputs)
