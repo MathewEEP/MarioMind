@@ -1,6 +1,7 @@
 import pygame
 import sys
 import math
+import random
 from gameObject import gameObject
 from goomba import goomba
 
@@ -8,7 +9,7 @@ pygame.init()
 size = 16 # Size of squares
 # independent from sizex, sizey
 width, height = 256, 240 # Game dimensions
-mariox, marioy = 0, 0
+mariox, marioy = -6, -5
 velo_x, velo_y = 0, 0 # Difference in x and y
 # these are velocities, need acceleration for both dx and dy (there's horizontal acceleration in actual game
 
@@ -173,8 +174,8 @@ def getInputs():
 
 def camera():
     global camerax, cameray
-    if mariox * size > camerax + width/4:
-        camerax = mariox * size - width/4
+    if mariox * size > camerax + width/(2 * size):
+        camerax = mariox * size - width/(2 * size)
         
 def physics(inputs):
     global mariox, marioy, velo_x, velo_y
@@ -209,49 +210,60 @@ def physics(inputs):
     velo_y -= 0.025
     velo_y = max(-size, velo_y)   
 
-# Generation code goes in init.
-def init():
-    x = 0
-    for i in range(-50, 50):
-        j = int(math.sin(i/6) * 3)
-        #if x % y == 0: #executes every y blocks
-        if x % 13 == 0:
-            add_entity(i, j + 2, i > 0, "block", "coin")
-        if x % 16 == 0: # place goomba every 15 blocks
-            goombas.append(goomba(i, j + 1, i > 0))
-        while j >= -9:
-            add_block(i, j, colorBrown)
-            j -= 1
-        x += 1
+#def generateMap(): 
+#    x = -50
+#    for j in range(-9, 5):
+#        i = -6
+#        add_block(i, j, colorBrown)
+#    for j in range(-5, 5):
+#        i = 150 
+#        add_block(i, j, colorBrown)
+#    for i in range(-5, 150):
+#        #j = int(math.sin(i/6) * 3)
+#        j = -1
+#        #if x % y == 0: #executes every y blocks
+#        if x % 13 == 0:
+#            add_entity(i, j + 2, i > 0, "block", "coin") 
+#        if x % 15 == 0: 
+#            goombas.append(goomba(i+3, j + 1, i > 0))
+#            add_block(i+1, j + 1, colorGreen)
+#            add_block(i+1, j + 2, colorGreen)
+#            add_block(i+1, j + 3, colorGreen)
+#            add_block(i+1, j + 4, colorGreen)
+#        while j >= -2: 
+#            add_block(i, j, colorBrown)
+#            j -= 1
+#        x += 1
 
-def initTest(): 
-    x = -50
-    for j in range(-9, 5):
-        i = -6
-        add_block(i, j, colorBrown)
-    for j in range(-5, 5):
-        i = 150 
-        add_block(i, j, colorBrown)
-    for i in range(-5, 150):
-        #j = int(math.sin(i/6) * 3)
-        j = -1
-        #if x % y == 0: #executes every y blocks
-        if x % 13 == 0:
-            add_entity(i, j + 2, i > 0, "block", "coin") 
-        if x % 15 == 0: 
-            goombas.append(goomba(i+3, j + 1, i > 0))
-            add_block(i+1, j + 1, colorGreen)
-            add_block(i+1, j + 2, colorGreen)
-            add_block(i+1, j + 3, colorGreen)
-            add_block(i+1, j + 4, colorGreen)
-        while j >= -2: 
-            add_block(i, j, colorBrown)
-            j -= 1
+def generateMap():
+    gaps = []
+    platformBlocks = []
+    for x in range(-50, 148):
+        if random.randint(1, 20) == 1:
+            gaps.append(x)
+            gaps.append(x+1)
+            gaps.append(x+2)
+    for i in range(10):
+        platx = random.randint(0, 150)
+        platy = -2
+        for block in platformBlocks:
+            if platx - block[0] <= 5 and platx - block[0] >= 0:
+                platy = block[1] + 2
+        platwidth = random.randint(1, 10)
+        for j in range(platwidth):
+            color = colorBlack
+            if random.randint(1, 20) == 1: color = colorYellow
+            for block in platformBlocks:
+                if platx + j == block[0]:
+                    break
+            add_block(platx + j, platy, color)
+            platformBlocks.append([platx + j, platy])
+    for x in range(-50, 150):
+        if not x in gaps:
+            add_block(x, -7, colorBrown)
+            add_block(x, -6, colorBrown)
 
-        x += 1
-
-
-initTest()
+generateMap()
 
 while not gameEnded:
     pygame.time.delay(int(1000/60))
