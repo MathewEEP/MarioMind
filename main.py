@@ -2,10 +2,10 @@ import pygame
 import sys
 import math
 import random
-from gameObject import gameObject
 from entities.koopa import koopa
 from entities.goomba import goomba
 from entities.coin import coin
+from entities.powerupBlock import powerupBlock
 
 pygame.init()
 size = 16 # Size of squares
@@ -32,6 +32,7 @@ colorGreen = (3, 252, 194)
 colorYellow = (255, 211, 67)
 colorTan = (210, 180, 140)
 colorRed = (255, 0, 0)
+colorPink = (255, 192, 203)
 
 gameEnded = False
 clock = pygame.time.Clock()
@@ -150,6 +151,11 @@ def render_scene(x, y):
     # Coin Rendering / Coins are Yellow
     global coin_rects
     coin_rects = [] # Rect objects for each coin
+
+    # Powerup block Rendering / Blocks are pink
+    global powerup_rects
+    powerup_rects = []
+
 
     for koopa in koopas:
         koopa_rect = draw_square(window, colorGreen, (koopa.x - x/size, - koopa.y + y/size), size)
@@ -329,12 +335,10 @@ def generateMap():
                 platy = block[1] + 2
         platwidth = random.randint(1, 10)
         for j in range(platwidth):
-            color = colorBlack
-            if random.randint(1, 20) == 1: color = colorYellow
             for block in platformBlocks:
                 if platx + j == block[0]:
                     break
-            add_block(platx + j, platy, color)
+            add_block(platx + j, platy, colorBlack)
             platformBlocks.append([platx + j, platy])
     for x in range(-50, 150):
         if not x in gaps:
@@ -353,6 +357,8 @@ def generateMap():
             koopas.append(koopa(block[0], block[1] + 2, random.randint(0, 2)))
         if random.randint(1, 20) == 1:
             coins.append(coin(block[0], block[1] + 2, random.randint(0, 2)))
+        if random.randint(1, 3) == 1:
+            powerupBlocks.append(powerupBlock(block[0], block[1] + 2, random.randint(0, 2)))
 
 generateMap()
 
