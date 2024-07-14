@@ -156,7 +156,6 @@ def render_scene(x, y):
     global powerup_rects
     powerup_rects = []
 
-
     for koopa in koopas:
         koopa_rect = draw_square(window, colorGreen, (koopa.x - x/size, - koopa.y + y/size), size)
         koopa_rects.append([koopa_rect, koopas.index(koopa)])
@@ -168,6 +167,10 @@ def render_scene(x, y):
     for coin in coins:
         coin_rect = draw_square(window, colorYellow, (coin.x - x/size, - coin.y + y/size), size)
         coin_rects.append([coin_rect, coins.index(coin)])
+
+    for powerup in powerupBlocks:
+        powerup_rect = draw_square(window, colorPink, (coin.x - x/size, - coin.y + y/size), size)
+        powerup_rects.append([powerup_rect, powerupBlocks.index(powerupBlock)])
 
 
 def updateGoombas():
