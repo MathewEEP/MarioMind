@@ -3,7 +3,9 @@ import sys
 import math
 import random
 from gameObject import gameObject
-from goomba import goomba
+from entities.koopa import koopa
+from entities.goomba import goomba
+from entities.coin import coin
 
 pygame.init()
 size = 16 # Size of squares
@@ -15,7 +17,7 @@ velo_x, velo_y = 0, 0 # Difference in x and y
 
 sizex, sizey = 20, 20 # Doesn't do anything rn
 
-PLAYER_MAX_SPEED = 0.3
+PLAYER_MAX_SPEED = 0.2
 acceleration = 0
 
 camerax, cameray = 0, 0
@@ -26,8 +28,8 @@ colorWhite = (255, 255, 255)
 colorBlack = (0, 0, 0)
 colorBlue = (125, 206, 235)
 colorBrown = (139, 69, 19)
-colorGreen = (3,252,194)
-colorYellow = (255,211,67)
+colorGreen = (3, 252, 194)
+colorYellow = (255, 211, 67)
 colorTan = (210, 180, 140)
 colorRed = (255, 0, 0)
 
@@ -35,17 +37,24 @@ gameEnded = False
 clock = pygame.time.Clock()
 
 blocks = {}
+flag = {}
 
-entities = []
+end_x = 100 # start of the ending platform/ end of main level;
+end_dist = 10 # how wide ending platform is
+flag_height = 7 # how tall flag is 
+flag_x = end_x + (end_dist * 0.75)
+
+koopas = []
 goombas = []
+coins = []
 
+def add_flag(x, y, color):
+    if not (x, y) in flag: flag[(x, y)] = [color]
+
+def add_flag(x, y, color):
+    if not (x, y) in flag: flag[(x, y)] = [color]
 def add_block(x, y, color):
     if not (x, y) in blocks: blocks[(x, y)] = [color]
-
-def add_entity(x, y, left, entity_type, entity):
-    # left is direction
-    if not (x, y) in entities:
-        entities.append([x, y, left, entity_type, entity])
 
 def delete_block(x, y):
     if (x, y) in blocks: del blocks[(x, y)]
@@ -60,6 +69,36 @@ def draw_square(surface, color, top_left, size):
     pygame.draw.rect(surface, color, pygame.Rect(top_left[0]*size+width/2, top_left[1]*size+height/2, size, size))
     return rect
 
+def draw_flag(surface, color, top_left, size):
+    global width, height
+
+    pygame.draw.rect(surface, color, pygame.Rect(top_left[0]*size+width/2, top_left[1]*size+height/2, size/5, size))
+
+def draw_triangle(surface, color, first, second, third):
+    global width, height
+
+    pygame.draw.polygon(surface, color, ((first[0]*size + width/2, first[1]*size + height/2), (second[0]*size + width/2, second[1]*size + height/2), (third[0]*size + width/2, third[1]*size + height/2)))
+
+
+def draw_circle(surface, color, center, radius):
+    global width, height
+    pygame.draw.circle(surface, color, (center[0]*size + width/2, center[1]*size + height/2), radius)
+
+def draw_flag(surface, color, top_left, size):
+    global width, height
+
+    pygame.draw.rect(surface, color, pygame.Rect(top_left[0]*size+width/2, top_left[1]*size+height/2, size/5, size))
+
+def draw_triangle(surface, color, first, second, third):
+    global width, height
+
+    pygame.draw.polygon(surface, color, ((first[0]*size + width/2, first[1]*size + height/2), (second[0]*size + width/2, second[1]*size + height/2), (third[0]*size + width/2, third[1]*size + height/2)))
+
+
+def draw_circle(surface, color, center, radius):
+    global width, height
+    pygame.draw.circle(surface, color, (center[0]*size + width/2, center[1]*size + height/2), radius)
+
 def draw_square_rect(surface, color, rect):
     global width, height
     pygame.draw.rect(surface, color, rect)
@@ -72,12 +111,35 @@ def render_scene(x, y):
     for block in blocks:
         draw_square(window, blocks[block][0], (block[0] - x/size, -block[1] + y/size), size)
 
+    # Render flag
+    # Pole
+    for line in flag:
+        draw_flag(window, flag[line][0], (line[0] - x/size, -line[1] + y/size), size)
+    # Flag triangle
+    draw_triangle(window, colorGreen, (flag_x - x/size, -(flag_height - 2) + y/size), (flag_x - x/size, -(flag_height - 1.25) + y/size), (flag_x - x/size - 1, -(flag_height - 1.25) + y/size))
+    # Circle on top
+    draw_circle(window, colorGreen, (flag_x + 0.1 - x/size, -(flag_height - 1) + y/size), 4)
+    # Render flag
+    # Pole
+    for line in flag:
+        draw_flag(window, flag[line][0], (line[0] - x/size, -line[1] + y/size), size)
+    # Flag triangle
+    draw_triangle(window, colorGreen, (flag_x - x/size, -(flag_height - 2) + y/size), (flag_x - x/size, -(flag_height - 1.25) + y/size), (flag_x - x/size - 1, -(flag_height - 1.25) + y/size))
+    # Circle on top
+    draw_circle(window, colorGreen, (flag_x + 0.1 - x/size, -(flag_height - 1) + y/size), 4)
+
     #Entity rendering
     #...
 
     # Mario Rendering
     global mario
     mario = draw_square(window, colorTan, (mariox - x/size, -marioy + y/size), size)
+
+    #Entity rendering
+
+    # Koopa Rendering / Koopas are red
+    global koopa_rects
+    koopa_rects = [] # Rect objects for each goomba
 
     # Goomba Rendering / Goombas are red
     global goomba_rects
@@ -87,14 +149,18 @@ def render_scene(x, y):
     global coin_rects
     coin_rects = [] # Rect objects for each coin
 
+    for koopa in koopas:
+        koopa_rect = draw_square(window, colorGreen, (koopa.x - x/size, - koopa.y + y/size), size)
+        koopa_rects.append([koopa_rect, koopas.index(koopa)])
+
     for goomba in goombas:
-        goomba_rect = draw_square(window, colorRed, (goomba.x - x/size, -goomba.y + y/size), size)
+        goomba_rect = draw_square(window, colorRed, (goomba.x - x/size, - goomba.y + y/size), size)
         goomba_rects.append([goomba_rect, goombas.index(goomba)])
 
-    for entity in entities:
-        if entity[4] == "coin":
-            coin_rect = draw_square(window, colorYellow, (entity[0] - x/size, -entity[1] + y/size), size)
-            coin_rects.append([coin_rect, entities.index(entity)])
+    for coin in coins:
+        coin_rect = draw_square(window, colorYellow, (coin.x - x/size, - coin.y + y/size), size)
+        coin_rects.append([coin_rect, coins.index(coin)])
+
 
 def updateGoombas():
      for goomba in goombas:
@@ -110,11 +176,45 @@ def updateGoombas():
         elif (math.floor(goomba.x+1), round(goomba.y)) in blocks and not goomba.left:
             goomba.left = True
         if (round(goomba.x), math.floor(goomba.y)) in blocks and goomba.dy < 0:
-                goomba.y = math.floor(goomba.y)+1
-                goomba.dy = 0
+            goomba.y = math.floor(goomba.y)+1
+            goomba.dy = 0
         if not(round(goomba.x), math.floor(goomba.y-0.2)) in blocks:
-                goomba.dy -= 0.02
+            goomba.dy -= 0.02
 
+def updateKoopas():
+    for koopa in koopas:
+        koopa.update()
+        if koopa.left:
+            koopa.dx = -koopa.speed
+        else:
+            koopa.dx = koopa.speed
+        #print(f"koopa at {koopa.x/size, koopa.y/size}")
+        #print(f"koopa is on ground: {isOnGround(koopa.x, koopa.y)}")
+        if (math.ceil(koopa.x-1), round(koopa.y)) in blocks and koopa.left:
+            koopa.left = False
+        elif (math.floor(koopa.x+1), round(koopa.y)) in blocks and not koopa.left:
+            koopa.left = True
+        if (round(koopa.x), math.floor(koopa.y)) in blocks and koopa.dy < 0:
+            koopa.y = math.floor(koopa.y)+1
+            koopa.dy = 0
+        if not(round(koopa.x), math.floor(koopa.y-0.2)) in blocks:
+            koopa.dy -= 0.02
+
+def koopaCollision():
+    global gameEnded
+    for i in range(len(koopa_rects)):
+        koopa_rect = koopa_rects[i][0]
+        if koopa_rect.colliderect(mario):
+            if mario.bottom > koopa_rect.top and mario.top < koopa_rect.top:
+                print("Koopa dead")
+                koopas.pop(koopa_rects[i][1])
+                break
+            elif koopa_rect.left <= mario.left <= koopa_rect.right and mario.top <= koopa_rect.top <= mario.bottom:
+                print("RIGHT INTERSECTION")
+                gameEnded = True
+            elif mario.left <= koopa_rect.left <= mario.right and mario.top <= koopa_rect.top <= mario.bottom:
+                print("LEFT INTERSECTION")
+                gameEnded = True
 
 def goombaCollision():
     global gameEnded
@@ -137,8 +237,7 @@ def coinCollision():
         coin_rect = coin_rects[i][0]
         if coin_rect.colliderect(mario):
             print("Coin collected")
-            entities.pop(coin_rects[i][1])
-            #coin_rects.reawmove(coin_rect[i]) Not needed for i think some reason automatically removes idk why
+            coins.pop(coin_rects[i][1])
             break
 
 def isOnGround(x, y):
@@ -174,8 +273,8 @@ def getInputs():
 
 def camera():
     global camerax, cameray
-    if mariox * size > camerax + width/(2 * size):
-        camerax = mariox * size - width/(2 * size)
+    if mariox * size > camerax:
+        camerax = mariox * size - width/100
         
 def physics(inputs):
     global mariox, marioy, velo_x, velo_y
@@ -196,8 +295,7 @@ def physics(inputs):
         if velo_x < 0 and not velo_x > 0:
             velo_x += 0.01
         elif velo_x > 0 and not velo_x < 0:
-            velo_x -= 0.01
-
+            velo_x -= 0.01 
     #if "f" in inputs: #debug key
     
     mariox, marioy = mariox + velo_x, marioy + velo_y
@@ -205,7 +303,6 @@ def physics(inputs):
     if (blockOnLeft(mariox, marioy)) or (blockOnRight(mariox, marioy)) or ((mariox * size) <= (camerax - width/2)):
         mariox -= velo_x
         velo_x = 0
-
 
     velo_y -= 0.025
     velo_y = max(-size, velo_y)   
@@ -272,6 +369,10 @@ while not gameEnded:
     pygame.display.flip()
     inputs = getInputs()
     physics(inputs)
+    
+    koopaCollision()
     goombaCollision()
     coinCollision()
+
+    updateKoopas()
     updateGoombas()
