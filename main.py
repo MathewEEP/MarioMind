@@ -362,7 +362,7 @@ def generateMap():
             coins.append(coin(block[0], block[1] + 2, random.randint(0, 2)))
         if random.randint(1, 3) == 1:
             powerupBlocks.append(powerupBlock(block[0], block[1] + 1))
-            blocks.remove(block)
+            delete_block(block[0], block[1])
 
 generateMap()
 
