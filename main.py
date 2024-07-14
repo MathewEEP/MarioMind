@@ -252,6 +252,10 @@ def blockOnRight(x, y):
     x, y = math.floor(x)+1, round(y)
     return (x, y) in blocks
 
+def blockOnTop(x, y):
+    x, y = round(x), math.ceil(y)
+    return (x, y) in blocks
+
 
 ### From this point we should turn this into a class for goombas and stuff. Mario's should be kept as-is though.
 def getInputs():
@@ -274,11 +278,11 @@ def getInputs():
 def camera():
     global camerax, cameray
     if mariox * size > camerax:
-        camerax = mariox * size - width/100
+        camerax = mariox * size
         
 def physics(inputs):
     global mariox, marioy, velo_x, velo_y
-    if isOnGround(mariox, marioy) and velo_y <= 0:
+    if (isOnGround(mariox, marioy) and velo_y <= 0) or blockOnTop(mariox, marioy):
         marioy -= velo_y
         velo_y = 0
         marioy = round(marioy)
