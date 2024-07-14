@@ -340,11 +340,11 @@ def generateMap():
         if not x in gaps:
             add_block(x, -7, colorBrown)
             add_block(x, -6, colorBrown)
-        if random.randint(1, 20) == 1:
+        if random.randint(1, 50) == 1:
             goombas.append(goomba(x, -5, random.randint(0, 2)))
-        if random.randint(1, 20) == 1:
+        if random.randint(1, 50) == 1:
             koopas.append(koopa(x, -5, random.randint(0, 2)))
-        if random.randint(1, 20) == 1:
+        if random.randint(1, 50) == 1:
             coins.append(coin(x, random.randint(-5, -2), random.randint(0, 2)))
     for block in platformBlocks:
         if random.randint(1, 20) == 1:
