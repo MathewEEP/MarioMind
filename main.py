@@ -303,7 +303,8 @@ def shellCollision():
         else:
             if shell_rect.colliderect(mario) and timer >= 5:
                 shells[i].active = True
-                bounceMario()
+                if mario.y > shell.y:
+                    bounceMario()
                 if shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
                     print("Shell - RIGHT INTERSECTION")
                     shells[i].left = True
