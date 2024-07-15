@@ -297,11 +297,9 @@ def shellCollision():
                 if shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
                     print("Shell - RIGHT INTERSECTION")
                     shells[i].left = True
-                    gameEnded = True
                 else:
                     print("Shell - LEFT INTERSECTION")
                     shells[i].left = False
-                    gameEnded = True
 
 def coinCollision():
     for i in range(len(coin_rects)):
@@ -310,6 +308,13 @@ def coinCollision():
             print("Coin collected")
             coins.pop(coin_rects[i][1])
             break
+
+def powerupCollision():
+    for i in range(len(powerup_rects)):
+        powerup_rect = powerup_rects[i][0]
+        if powerup_rect.colliderect(mario):
+            if mario.bottom <= shell_rect.bottom <= mario.top: # bottom intersection
+                print("mario got the power up")
 
 def isOnGround(x, y):
     x, y = round(x), math.ceil(y)-1
@@ -438,6 +443,7 @@ while not gameEnded:
     koopaCollision()
     goombaCollision()
     coinCollision()
+    powerupCollision()
 
     updateKoopas()
     updateGoombas()
