@@ -7,6 +7,7 @@ from entities.goomba import goomba
 from entities.coin import coin
 from entities.powerupBlock import powerupBlock
 from entities.shell import shell
+from entities.mushroom import mushroom
 
 pygame.init()
 size = 16 # Size of squares
@@ -54,7 +55,7 @@ goombas = []
 coins = []
 powerupBlocks = []
 shells = []
-
+mushrooms = []
 
 def add_flag(x, y, color):
     if not (x, y) in flag: flag[(x, y)] = [color]
@@ -165,6 +166,10 @@ def render_scene(x, y):
     global shell_rects
     shell_rects = []
 
+    # Mushroom Rect / Mushrooms are black
+    global mushroom_rects
+    mushroom_rects = []
+
     for koopa in koopas:
         koopa_rect = draw_square(window, colorGreen, (koopa.x - x/size, - koopa.y + y/size), size)
         koopa_rects.append([koopa_rect, koopas.index(koopa)])
@@ -185,6 +190,9 @@ def render_scene(x, y):
         shell_rect = draw_square(window, colorPureBlue, (shell.x - x/size, - shell.y + y/size), size)
         shell_rects.append([shell_rect, shells.index(shell)])
 
+    for mushroom in mushrooms:
+        mushroom_rect = draw_square(window, colorBlack, (mushroom.x - x/size, - mushroom.y + y/size), size)
+        mushroom_rects.append([mushroom_rect, mushrooms.index(mushroom)])
 
 def updateGoombas():
      for goomba in goombas:
@@ -243,9 +251,45 @@ def updateKoopas():
         if not(round(koopa.x), math.floor(koopa.y-0.2)) in blocks:
             koopa.dy -= 0.02
 
+def updateMushrooms():
+    for mushroom in mushrooms:
+        mushroom.update()
+        if mushroom.left:
+            mushroom.dx = -mushroom.speed
+        else:
+            mushroom.dx = mushroom.speed
+        
+        if (math.ceil(mushroom.x-1), round(mushroom.y)) in blocks and mushroom.left:
+            mushroom.left = False
+        elif (math.floor(mushroom.x+1), round(mushroom.y)) in blocks and not mushroom.left:
+            mushroom.left = True
+        if (round(mushroom.x), math.floor(mushroom.y)) in blocks and mushroom.dy < 0:
+            mushroom.y = math.floor(mushroom.y)+1
+            mushroom.dy = 0
+        if not(round(mushroom.x), math.floor(mushroom.y-0.2)) in blocks:
+            mushroom.dy -= 0.02
+        
+
 def timerCount():
     global timer
     timer += 1
+
+def goombaCollision():
+    global gameEnded, timer
+    for i in range(len(goomba_rects)):
+        goomba_rect = goomba_rects[i][0]
+        if goomba_rect.colliderect(mario):
+            if mario.bottom > goomba_rect.top and mario.top < goomba_rect.top and timer >= 5:
+                print("Goomba dead")
+                goombas.pop(goomba_rects[i][1])
+                bounceMario()
+                break
+            elif goomba_rect.left <= mario.left <= goomba_rect.right and mario.top <= goomba_rect.top <= mario.bottom:
+                print("Goomba - RIGHT INTERSECTION")
+                gameEnded = True
+            elif mario.left <= goomba_rect.left <= mario.right and mario.top <= goomba_rect.top <= mario.bottom:
+                print("Goomba - LEFT INTERSECTION")
+                gameEnded = True
 
 def koopaCollision():
     global gameEnded, timer
@@ -263,23 +307,6 @@ def koopaCollision():
                 gameEnded = True
             elif mario.left <= koopa_rect.left <= mario.right and mario.top <= koopa_rect.top <= mario.bottom:
                 print("Koopa - LEFT INTERSECTION")
-                gameEnded = True
-
-def goombaCollision():
-    global gameEnded, timer
-    for i in range(len(goomba_rects)):
-        goomba_rect = goomba_rects[i][0]
-        if goomba_rect.colliderect(mario):
-            if mario.bottom > goomba_rect.top and mario.top < goomba_rect.top and timer >= 5:
-                print("Goomba dead")
-                goombas.pop(goomba_rects[i][1])
-                bounceMario()
-                break
-            elif goomba_rect.left <= mario.left <= goomba_rect.right and mario.top <= goomba_rect.top <= mario.bottom:
-                print("Goomba - RIGHT INTERSECTION")
-                gameEnded = True
-            elif mario.left <= goomba_rect.left <= mario.right and mario.top <= goomba_rect.top <= mario.bottom:
-                print("Goomba - LEFT INTERSECTION")
                 gameEnded = True
 
 def shellCollision():
@@ -300,6 +327,11 @@ def shellCollision():
                 elif mario.left <= shell_rect.left <= mario.right and mario.top <= shell_rect.top <= mario.bottom:
                     print("Shell - LEFT INTERSECTION")
                     gameEnded = True
+            elif shell_rect.colliderect(mario):
+                if shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
+                    shells[i].x = mario.x - 1
+                elif mario.left <= shell_rect.left <= mario.right and mario.top <= shell_rect.top <= mario.bottom:
+                    shells[i].x = mario.x + 1
         else:
             if shell_rect.colliderect(mario) and timer >= 5:
                 shells[i].active = True
@@ -327,9 +359,8 @@ def powerupCollision():
         powerup_rect = powerup_rects[i][0]
         if powerup_rect.colliderect(mario):
             print("powerup collide")
-            print(powerup_rect.bottom, mario.top)
             if powerup_rect.bottom >= mario.top:  # bottom intersection
-                print("mario got the power up")
+                mushrooms.append(mushroom(powerup_rect.x, powerup_rect.y, False))
 
 def bounceMario():
     global velo_y, marioy, timer
@@ -470,3 +501,4 @@ while not gameEnded:
     updateKoopas()
     updateGoombas()
     updateShells()
+    updateMushrooms()
