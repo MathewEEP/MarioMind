@@ -18,6 +18,8 @@ velo_x, velo_y = 0, 0 # Difference in x and y
 
 sizex, sizey = 20, 20 # Doesn't do anything rn
 
+timer = 0
+
 PLAYER_MAX_SPEED = 0.2
 acceleration = 0
 
@@ -39,7 +41,7 @@ colorPureBlue = (0, 0, 255)
 gameEnded = False
 clock = pygame.time.Clock()
 
-blocks = {}
+blocks = {} 
 flag = {}
 
 end_x = 100 # start of the ending platform/ end of main level;
@@ -241,12 +243,16 @@ def updateKoopas():
         if not(round(koopa.x), math.floor(koopa.y-0.2)) in blocks:
             koopa.dy -= 0.02
 
+def timer():
+    global timer
+    timer += 1
+
 def koopaCollision():
     global gameEnded
     for i in range(len(koopa_rects)):
         koopa_rect = koopa_rects[i][0]
         if koopa_rect.colliderect(mario):
-            if mario.bottom > koopa_rect.top and mario.top < koopa_rect.top:
+            if mario.bottom > koopa_rect.top and mario.top < koopa_rect.top and timer >= 5:
                 print("Koopa dead")
                 shells.append(shell(koopas[i].x, koopas[i].y, random.randint(0, 2))) # goombas.append(goomba(block[0], block[1] + 2, random.randint(0, 2)))
                 koopas.pop(koopa_rects[i][1])
@@ -264,7 +270,7 @@ def goombaCollision():
     for i in range(len(goomba_rects)):
         goomba_rect = goomba_rects[i][0]
         if goomba_rect.colliderect(mario):
-            if mario.bottom > goomba_rect.top and mario.top < goomba_rect.top:
+            if mario.bottom > goomba_rect.top and mario.top < goomba_rect.top and timer >= 5:
                 print("Goomba dead")
                 goombas.pop(goomba_rects[i][1])
                 bounceMario()
@@ -283,8 +289,8 @@ def shellCollision():
 
         if (shells[i].active == True):
             if shell_rect.colliderect(mario):
-                bounceMario()
-                if mario.bottom > shell_rect.top and mario.top < shell_rect.top:
+                if mario.bottom > shell_rect.top and mario.top < shell_rect.top and timer >= 5:
+                    bounceMario()
                     print("Shell toggled")
                     shell.active = False
                     break
@@ -295,7 +301,7 @@ def shellCollision():
                     print("Shell - LEFT INTERSECTION")
                     gameEnded = True
         else:
-            if shell_rect.colliderect(mario):
+            if shell_rect.colliderect(mario) and timer >= 5:
                 shells[i].active = True
                 bounceMario()
                 if shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
@@ -323,7 +329,8 @@ def powerupCollision():
                 print("mario got the power up")
 
 def bounceMario():
-    global velo_y, marioy
+    global velo_y, marioy, timer
+    timer = 0
     velo_y = 0.1
     marioy += velo_y
 
@@ -450,7 +457,7 @@ while not gameEnded:
     pygame.display.flip()
     inputs = getInputs()
     physics(inputs)
-    
+    timer()
     koopaCollision()
     goombaCollision()
     coinCollision()
