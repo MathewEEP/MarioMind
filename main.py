@@ -288,8 +288,8 @@ def shellCollision():
         shell_rect = shell_rects[i][0]
 
         if (shells[i].active == True):
-            if shell_rect.colliderect(mario):
-                if mario.bottom > shell_rect.top and mario.top < shell_rect.top and timer >= 5:
+            if shell_rect.colliderect(mario) and timer >= 5:
+                if mario.bottom > shell_rect.top and mario.top < shell_rect.top:
                     bounceMario()
                     print("Shell toggled")
                     shell.active = False
