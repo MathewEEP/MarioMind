@@ -243,7 +243,7 @@ def updateKoopas():
         if not(round(koopa.x), math.floor(koopa.y-0.2)) in blocks:
             koopa.dy -= 0.02
 
-def timer():
+def timerCount():
     global timer
     timer += 1
 
@@ -457,7 +457,7 @@ while not gameEnded:
     pygame.display.flip()
     inputs = getInputs()
     physics(inputs)
-    timer()
+    timerCount()
     koopaCollision()
     goombaCollision()
     coinCollision()
