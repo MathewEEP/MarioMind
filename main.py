@@ -180,7 +180,7 @@ def render_scene(x, y):
         powerup_rects.append([powerup_rect, powerupBlocks.index(powerup)])
 
     for shell in shells:
-        shell_rect = draw_square(window, colorPureBlue (shell.x - x/size, - shell.y + y/size), size)
+        shell_rect = draw_square(window, colorPureBlue, (shell.x - x/size, - shell.y + y/size), size)
         shell_rects.append([shell_rect, shells.index(shell)])
 
 
