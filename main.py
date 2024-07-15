@@ -248,7 +248,7 @@ def timerCount():
     timer += 1
 
 def koopaCollision():
-    global gameEnded
+    global gameEnded, timer
     for i in range(len(koopa_rects)):
         koopa_rect = koopa_rects[i][0]
         if koopa_rect.colliderect(mario):
@@ -266,7 +266,7 @@ def koopaCollision():
                 gameEnded = True
 
 def goombaCollision():
-    global gameEnded
+    global gameEnded, timer
     for i in range(len(goomba_rects)):
         goomba_rect = goomba_rects[i][0]
         if goomba_rect.colliderect(mario):
@@ -283,7 +283,7 @@ def goombaCollision():
                 gameEnded = True
 
 def shellCollision():
-    global gameEnded, velo_y, marioy
+    global gameEnded, velo_y, marioy, timer
     for i in range(len(shell_rects)):
         shell_rect = shell_rects[i][0]
 
