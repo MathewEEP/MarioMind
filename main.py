@@ -250,6 +250,7 @@ def koopaCollision():
                 print("Koopa dead")
                 shells.append(shell(koopas[i].x, koopas[i].y, random.randint(0, 2))) # goombas.append(goomba(block[0], block[1] + 2, random.randint(0, 2)))
                 koopas.pop(koopa_rects[i][1])
+                bounceMario()
                 break
             elif koopa_rect.left <= mario.left <= koopa_rect.right and mario.top <= koopa_rect.top <= mario.bottom:
                 print("Koopa - RIGHT INTERSECTION")
@@ -266,6 +267,7 @@ def goombaCollision():
             if mario.bottom > goomba_rect.top and mario.top < goomba_rect.top:
                 print("Goomba dead")
                 goombas.pop(goomba_rects[i][1])
+                bounceMario()
                 break
             elif goomba_rect.left <= mario.left <= goomba_rect.right and mario.top <= goomba_rect.top <= mario.bottom:
                 print("Goomba - RIGHT INTERSECTION")
@@ -281,6 +283,7 @@ def shellCollision():
 
         if (shells[i].active == True):
             if shell_rect.colliderect(mario):
+                bounceMario()
                 if mario.bottom > shell_rect.top and mario.top < shell_rect.top:
                     print("Shell toggled")
                     shell.active = False
@@ -294,8 +297,7 @@ def shellCollision():
         else:
             if shell_rect.colliderect(mario):
                 shells[i].active = True
-                velo_y = 0.1
-                marioy += velo_y
+                bounceMario()
                 if shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
                     print("Shell - RIGHT INTERSECTION")
                     shells[i].left = True
@@ -319,6 +321,11 @@ def powerupCollision():
             print(powerup_rect.bottom, mario.top)
             if powerup_rect.bottom >= mario.top:  # bottom intersection
                 print("mario got the power up")
+
+def bounceMario():
+    global velo_y, marioy
+    velo_y = 0.1
+    marioy += velo_y
 
 def isOnGround(x, y):
     x, y = round(x), math.ceil(y)-1
