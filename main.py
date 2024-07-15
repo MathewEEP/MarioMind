@@ -308,9 +308,11 @@ def shellCollision():
                 if shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
                     print("Shell - RIGHT INTERSECTION")
                     shells[i].left = True
+                    timer = 0
                 else:
                     print("Shell - LEFT INTERSECTION")
                     shells[i].left = False
+                    timer = 0
 
 def coinCollision():
     for i in range(len(coin_rects)):
