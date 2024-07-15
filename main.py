@@ -275,7 +275,7 @@ def goombaCollision():
                 gameEnded = True
 
 def shellCollision():
-    global gameEnded
+    global gameEnded, velo_y
     for i in range(len(shell_rects)):
         shell_rect = shell_rects[i][0]
 
@@ -294,6 +294,7 @@ def shellCollision():
         else:
             if shell_rect.colliderect(mario):
                 shells[i].active = True
+                velo_y = 0.425
                 if shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
                     print("Shell - RIGHT INTERSECTION")
                     shells[i].left = True
