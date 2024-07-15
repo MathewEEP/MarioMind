@@ -331,7 +331,7 @@ def powerupCollision():
 def bounceMario():
     global velo_y, marioy, timer
     timer = 0
-    velo_y = 0.1
+    velo_y = 0.2
     marioy += velo_y
 
 def isOnGround(x, y):
