@@ -278,17 +278,30 @@ def shellCollision():
     global gameEnded
     for i in range(len(shell_rects)):
         shell_rect = shell_rects[i][0]
-        if shell_rect.colliderect(mario):
-            if mario.bottom > shell_rect.top and mario.top < shell_rect.top:
-                print("Shell toggled")
-                shell.active = False
-                break
-            elif shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
-                print("Shell - RIGHT INTERSECTION")
-                gameEnded = True
-            elif mario.left <= shell_rect.left <= mario.right and mario.top <= shell_rect.top <= mario.bottom:
-                print("Shell - LEFT INTERSECTION")
-                gameEnded = True
+
+        if (shells[i].active == True):
+            if shell_rect.colliderect(mario):
+                if mario.bottom > shell_rect.top and mario.top < shell_rect.top:
+                    print("Shell toggled")
+                    shell.active = False
+                    break
+                elif shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
+                    print("Shell - RIGHT INTERSECTION")
+                    gameEnded = True
+                elif mario.left <= shell_rect.left <= mario.right and mario.top <= shell_rect.top <= mario.bottom:
+                    print("Shell - LEFT INTERSECTION")
+                    gameEnded = True
+        else:
+            if shell_rect.colliderect(mario):
+                shells[i].active = True
+                if shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
+                    print("Shell - RIGHT INTERSECTION")
+                    shells[i].left = True
+                    gameEnded = True
+                else:
+                    print("Shell - LEFT INTERSECTION")
+                    shells[i].left = False
+                    gameEnded = True
 
 def coinCollision():
     for i in range(len(coin_rects)):
