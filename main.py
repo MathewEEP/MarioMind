@@ -294,7 +294,7 @@ def shellCollision():
         else:
             if shell_rect.colliderect(mario):
                 shells[i].active = True
-                velo_y = 0.425
+                velo_y = 0.1
                 marioy += velo_y
                 if shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
                     print("Shell - RIGHT INTERSECTION")
