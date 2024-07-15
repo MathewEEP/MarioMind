@@ -249,7 +249,7 @@ def koopaCollision():
             if mario.bottom > koopa_rect.top and mario.top < koopa_rect.top:
                 print("Koopa dead")
                 koopas.pop(koopa_rects[i][1])
-                shells.append(shell())
+                shells.append(shell(koopas[i].x, koopas[i].y, random.randint(0, 2))) # goombas.append(goomba(block[0], block[1] + 2, random.randint(0, 2)))
                 break
             elif koopa_rect.left <= mario.left <= koopa_rect.right and mario.top <= koopa_rect.top <= mario.bottom:
                 print("Koopa - RIGHT INTERSECTION")
