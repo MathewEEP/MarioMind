@@ -313,7 +313,9 @@ def powerupCollision():
     for i in range(len(powerup_rects)):
         powerup_rect = powerup_rects[i][0]
         if powerup_rect.colliderect(mario):
-            if mario.bottom <= powerup_rect.bottom <= mario.top: # bottom intersection
+            print("powerup collide")
+            print(powerup_rect.bottom, mario.top)
+            if powerup_rect.bottom >= mario.top:  # bottom intersection
                 print("mario got the power up")
 
 def isOnGround(x, y):
