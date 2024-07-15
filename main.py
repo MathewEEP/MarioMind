@@ -6,6 +6,7 @@ from entities.koopa import koopa
 from entities.goomba import goomba
 from entities.coin import coin
 from entities.powerupBlock import powerupBlock
+from entities.shell import shell
 
 pygame.init()
 size = 16 # Size of squares
@@ -33,6 +34,7 @@ colorYellow = (255, 211, 67)
 colorTan = (210, 180, 140)
 colorRed = (255, 0, 0)
 colorPink = (255, 192, 203)
+colorPureBlue = (0, 0, 255)
 
 gameEnded = False
 clock = pygame.time.Clock()
@@ -49,6 +51,7 @@ koopas = []
 goombas = []
 coins = []
 powerupBlocks = []
+shells = []
 
 
 def add_flag(x, y, color):
@@ -156,6 +159,10 @@ def render_scene(x, y):
     global powerup_rects
     powerup_rects = []
 
+    # Shell Render / Shells are Pure Blue
+    global shell_rects
+    shell_rects = []
+
     for koopa in koopas:
         koopa_rect = draw_square(window, colorGreen, (koopa.x - x/size, - koopa.y + y/size), size)
         koopa_rects.append([koopa_rect, koopas.index(koopa)])
@@ -171,6 +178,10 @@ def render_scene(x, y):
     for powerup in powerupBlocks:
         powerup_rect = draw_square(window, colorPink, (powerup.x - x/size, - powerup.y + y/size), size)
         powerup_rects.append([powerup_rect, powerupBlocks.index(powerup)])
+
+    for shell in shells:
+        shell_rect = draw_square(window, colorPureBlue (shell.x - x/size, - shell.y + y/size), size)
+        shell_rects.append([shell_rect, shells.index(shell)])
 
 
 def updateGoombas():
@@ -190,6 +201,27 @@ def updateGoombas():
             goomba.dy = 0
         if not(round(goomba.x), math.floor(goomba.y-0.2)) in blocks:
             goomba.dy -= 0.02
+
+def updateShells():
+     for shell in shells:
+        if not shell.active:
+            continue
+
+        shell.update()
+        if shell.left:
+            shell.dx = -shell.speed
+        else:
+            shell.dx = shell.speed
+        
+        if (math.ceil(shell.x-1), round(shell.y)) in blocks and shell.left:
+            shell.left = False
+        elif (math.floor(shell.x+1), round(shell.y)) in blocks and not shell.left:
+            shell.left = True
+        if (round(shell.x), math.floor(shell.y)) in blocks and shell.dy < 0:
+            shell.y = math.floor(shell.y)+1
+            shell.dy = 0
+        if not(round(shell.x), math.floor(shell.y-0.2)) in blocks:
+            shell.dy -= 0.02
 
 def updateKoopas():
     for koopa in koopas:
@@ -217,6 +249,7 @@ def koopaCollision():
             if mario.bottom > koopa_rect.top and mario.top < koopa_rect.top:
                 print("Koopa dead")
                 koopas.pop(koopa_rects[i][1])
+                shells.append(shell())
                 break
             elif koopa_rect.left <= mario.left <= koopa_rect.right and mario.top <= koopa_rect.top <= mario.bottom:
                 print("Koopa - RIGHT INTERSECTION")
@@ -239,6 +272,22 @@ def goombaCollision():
                 gameEnded = True
             elif mario.left <= goomba_rect.left <= mario.right and mario.top <= goomba_rect.top <= mario.bottom:
                 print("Goomba - LEFT INTERSECTION")
+                gameEnded = True
+
+def shellCollision():
+    global gameEnded
+    for i in range(len(shell_rects)):
+        shell_rect = shell_rects[i][0]
+        if shell_rect.colliderect(mario):
+            if mario.bottom > shell_rect.top and mario.top < shell_rect.top:
+                print("Shell toggled")
+                shell.active = False
+                break
+            elif shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
+                print("Shell - RIGHT INTERSECTION")
+                gameEnded = True
+            elif mario.left <= shell_rect.left <= mario.right and mario.top <= shell_rect.top <= mario.bottom:
+                print("Shell - LEFT INTERSECTION")
                 gameEnded = True
 
 def coinCollision():
