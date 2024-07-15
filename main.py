@@ -328,6 +328,8 @@ def shellCollision():
                     print("Shell - LEFT INTERSECTION")
                     gameEnded = True
             elif shell_rect.colliderect(mario):
+                # move the shell with mario (doesnt work right now)
+                # NUMBER ONE GOAL TODO
                 if shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
                     shells[i].x = mario.x - 1
                 elif mario.left <= shell_rect.left <= mario.right and mario.top <= shell_rect.top <= mario.bottom:
