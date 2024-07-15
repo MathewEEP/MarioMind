@@ -446,6 +446,8 @@ while not gameEnded:
     goombaCollision()
     coinCollision()
     powerupCollision()
+    shellCollision()
 
     updateKoopas()
     updateGoombas()
+    updateShells()
