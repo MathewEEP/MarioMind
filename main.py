@@ -127,7 +127,7 @@ def mario_state(state, x,y):
         mario = draw_square(window, colorTan, (mariox - x/size, -marioy + y/size), size)
         return
     if state == 1:
-        mario = draw_rect(window, colorTan, (mariox - x/size, -marioy + y/size), size, size*2)
+        mario = draw_rect(window, colorTan, (mariox - x/size, -1-marioy + y/size), size, size*2)
 
 def render_scene(x, y):
     global sizex, sizey
