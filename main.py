@@ -274,7 +274,7 @@ def timerCount():
 def leftIntersection(rect):
     global mario
     if rect.colliderect(mario):
-        return rect.left <= mario.left <= rect.right and mario.top <= rect.top <= mario.bottom
+        return mario.left <= rect.left <= mario.right and mario.top <= rect.top <= mario.bottom
     return False
 
 def rightIntersection(rect):
