@@ -377,7 +377,7 @@ def powerupCollision():
         if powerup_rect.colliderect(mario):
             print("powerup collide")
             if powerup_rect.bottom >= mario.top:  # bottom intersection
-                mushrooms.append(mushroom(powerup_rect.x, powerup_rect.y, False))
+                mushrooms.append(mushroom(powerup_rect.x/size, powerup_rect.y/size, False))
 
 def bounceMario():
     global velo_y, marioy, timer
