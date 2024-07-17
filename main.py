@@ -342,13 +342,6 @@ def shellCollision():
                 elif mario.left <= shell_rect.left <= mario.right and mario.top <= shell_rect.top <= mario.bottom:
                     print("Shell - LEFT INTERSECTION")
                     gameEnded = True
-            elif shell_rect.colliderect(mario):
-                velo_y = 0
-                marioy = math.ceil(marioy)
-                if shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
-                    shells[i].x = mario.x - 1
-                elif mario.left <= shell_rect.left <= mario.right and mario.top <= shell_rect.top <= mario.bottom:
-                    shells[i].x = mario.x + 1
         else:
             if shell_rect.colliderect(mario) and timer >= 5:
                 shells[i].active = True
