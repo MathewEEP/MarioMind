@@ -317,10 +317,10 @@ def koopaCollision():
                 koopas.pop(koopa_rects[i][1])
                 bounceMario()
                 break
-            elif koopa_rect.left <= mario.left <= koopa_rect.right and mario.top <= koopa_rect.top <= mario.bottom and mario.left > koopa_rect.left:
+            elif koopa_rect.left <= mario.left <= koopa_rect.right and mario.top <= koopa_rect.top <= mario.bottom:
                 print("Koopa - RIGHT INTERSECTION")
                 gameEnded = True
-            elif mario.left <= koopa_rect.left <= mario.right and mario.top <= koopa_rect.top <= mario.bottom and mario.left < koopa_rect.left:
+            elif mario.left <= koopa_rect.left <= mario.right and mario.top <= koopa_rect.top <= mario.bottom:
                 print("Koopa - LEFT INTERSECTION")
                 gameEnded = True
 
@@ -336,10 +336,10 @@ def shellCollision():
                     print("Shell toggled")
                     shells[i].active = False
                     break
-                elif shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
+                elif shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom and not shells[i].left:
                     print("Shell - RIGHT INTERSECTION")
                     gameEnded = True
-                elif mario.left <= shell_rect.left <= mario.right and mario.top <= shell_rect.top <= mario.bottom:
+                elif mario.left <= shell_rect.left <= mario.right and mario.top <= shell_rect.top <= mario.bottom and shells[i].left:
                     print("Shell - LEFT INTERSECTION")
                     gameEnded = True
         else:
