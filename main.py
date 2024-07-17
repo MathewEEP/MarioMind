@@ -192,6 +192,7 @@ def render_scene(x, y):
         mushroom_rects.append([mushroom_rect, mushrooms.index(mushroom)])
 
 def updateGoombas():
+     global camerax
      for goomba in goombas:
         if goomba.visible:
             goomba.update()
@@ -209,6 +210,8 @@ def updateGoombas():
                 goomba.dy = 0
             if not(round(goomba.x), math.floor(goomba.y-0.2)) in blocks:
                 goomba.dy -= 0.02
+        elif goomba.x - camerax <= 7:
+            goomba.visible = True
 
 def updateShells():
      for shell in shells:
@@ -249,6 +252,8 @@ def updateKoopas():
                 koopa.dy = 0
             if not(round(koopa.x), math.floor(koopa.y-0.2)) in blocks:
                 koopa.dy -= 0.02
+        elif koopa.x - camerax <= 7:
+            koopa.visible = True
 
 def updateMushrooms():
     for mushroom in mushrooms:
