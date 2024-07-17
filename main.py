@@ -317,19 +317,19 @@ def koopaCollision():
     global gameEnded, timer
     for i in range(len(koopa_rects)):
         koopa_rect = koopa_rects[i][0]
-        
-        if verticalIntersection(koopa_rect) and timer >= 5:
-            print("Koopa dead")
-            shells.append(shell(koopas[i].x, koopas[i].y, random.randint(0, 2))) # goombas.append(goomba(block[0], block[1] + 2, random.randint(0, 2)))
-            koopas.pop(koopa_rects[i][1])
-            bounceMario()
-            break
-        elif rightIntersection(koopa_rect):
-            print("Koopa - RIGHT INTERSECTION")
-            gameEnded = True
-        elif leftIntersection(koopa_rect):
-            print("Koopa - LEFT INTERSECTION")
-            gameEnded = True
+        if koopa_rect.colliderect(mario):
+            if mario.bottom > koopa_rect.top and mario.top < koopa_rect.top and timer >= 5:
+                print("Koopa dead")
+                shells.append(shell(koopas[i].x, koopas[i].y, random.randint(0, 2))) # goombas.append(goomba(block[0], block[1] + 2, random.randint(0, 2)))
+                koopas.pop(koopa_rects[i][1])
+                bounceMario()
+                break
+            elif koopa_rect.left <= mario.left <= koopa_rect.right and mario.top <= koopa_rect.top <= mario.bottom:
+                print("Koopa - RIGHT INTERSECTION")
+                gameEnded = True
+            elif mario.left <= koopa_rect.left <= mario.right and mario.top <= koopa_rect.top <= mario.bottom:
+                print("Koopa - LEFT INTERSECTION")
+                gameEnded = True
 
 def shellCollision():
     global gameEnded, velo_y, marioy, timer
@@ -337,31 +337,31 @@ def shellCollision():
         shell_rect = shell_rects[i][0]
 
         if (shells[i].active == True):
-            if verticalIntersection(shell_rect) and timer >= 5:
-                bounceMario()
-                print("Shell toggled")
-                shells[i].active = False
-                break
-            elif rightIntersection(shell_rect) and timer >= 5:
-                print("Shell - RIGHT INTERSECTION")
-                gameEnded = True
-            elif leftIntersection(shell_rect) and timer >= 5:
-                print("Shell - LEFT INTERSECTION")
-                gameEnded = True
+            if shell_rect.colliderect(mario) and timer >= 5:
+                if mario.bottom > shell_rect.top and mario.top < shell_rect.top:
+                    bounceMario()
+                    print("Shell toggled")
+                    shells[i].active = False
+                    break
+                elif shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom and not shells[i].left:
+                    print("Shell - RIGHT INTERSECTION")
+                    gameEnded = True
+                elif mario.left <= shell_rect.left <= mario.right and mario.top <= shell_rect.top <= mario.bottom and shells[i].left:
+                    print("Shell - LEFT INTERSECTION")
+                    gameEnded = True
         else:
-            if verticalIntersection(shell_rect) and timer >= 5:
-                bounceMario()
+            if shell_rect.colliderect(mario) and timer >= 5:
                 shells[i].active = True
-            elif rightIntersection(shell_rect) and timer >= 5:
-                print("Shell - RIGHT INTERSECTION")
-                shells[i].left = True
-                timer = 0
-                shells[i].active = True
-            elif leftIntersection(shell_rect) and timer >= 5:
-                print("Shell - LEFT INTERSECTION")
-                shells[i].left = False
-                timer = 0
-                shells[i].active = True
+                if mario.bottom > shell_rect.top and mario.top < shell_rect.top:
+                    bounceMario()
+                if shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
+                    print("Shell - RIGHT INTERSECTION")
+                    shells[i].left = True
+                    timer = 0
+                elif mario.left <= shell_rect.left <= mario.right and mario.top <= shell_rect.top <= mario.bottom:
+                    print("Shell - LEFT INTERSECTION")
+                    shells[i].left = False
+                    timer = 0
 
 def coinCollision():
     for i in range(len(coin_rects)):
@@ -377,9 +377,18 @@ def powerupCollision():
         if powerup_rect.colliderect(mario):
             print("powerup collide")
             if powerup_rect.bottom >= mario.top:  # bottom intersection
-                mushrooms.append(mushroom(powerupBlocks[i].x, powerupBlocks[i].y + 1, False))
+                mushrooms.append(mushroom(powerupBlocks[i].x, powerupBlocks[i].y + 1, False)) #shells.append(shell(koopas[i].x, koopas[i].y, random.randint(0, 2)))
                 powerupBlocks.pop(powerup_rects[i][1])
+                break
 
+def mushroomCollision():
+    for i in range(len(mushroom_rects)):
+        mushroom_rect = mushroom_rects[i][0]
+        if mushroom_rect.colliderect(mario):
+            print("Mushroom collide")
+            mushrooms.pop(mushroom_rects[i][1])
+            break
+        
 def bounceMario():
     global velo_y, marioy, timer
     timer = 0
@@ -468,6 +477,11 @@ def physics(inputs):
 def generateMap():
     gaps = []
     platformBlocks = []
+    
+    #Generate individual tests below
+    powerupBlocks.append(powerupBlock(0,-1))
+
+    #Procedural generation below
     for x in range(0, 148):
         if random.randint(1, 20) == 1:
             gaps.append(x)
