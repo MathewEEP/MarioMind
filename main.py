@@ -351,14 +351,17 @@ def shellCollision():
         else:
             if verticalIntersection(shell_rect) and timer >= 5:
                 bounceMario()
+                shells[i].active = True
             elif rightIntersection(shell_rect) and timer >= 5:
                 print("Shell - RIGHT INTERSECTION")
                 shells[i].left = True
                 timer = 0
+                shells[i].active = True
             elif leftIntersection(shell_rect) and timer >= 5:
                 print("Shell - LEFT INTERSECTION")
                 shells[i].left = False
                 timer = 0
+                shells[i].active = True
 
 def coinCollision():
     for i in range(len(coin_rects)):
