@@ -61,8 +61,6 @@ mushrooms = []
 def add_flag(x, y, color):
     if not (x, y) in flag: flag[(x, y)] = [color]
 
-def add_flag(x, y, color):
-    if not (x, y) in flag: flag[(x, y)] = [color]
 def add_block(x, y, color):
     if not (x, y) in blocks: blocks[(x, y)] = [color]
 
@@ -72,18 +70,18 @@ def delete_block(x, y):
 def draw_background(color):
     pygame.draw.rect(window, color, pygame.Rect(0, 0, width, height))
 
-def draw_rect(surface, color, top_left, rect_width, rect_height):
+def draw_rect(surface, color, top_left, rect_width, rect_height): 
     global width, height
     rect = pygame.Rect(top_left[0]*size+width/2, top_left[1]*size+height/2, rect_width, rect_height)
 
-    pygame.draw.rect(surface, color, pygame.Rect(top_left[0]*size+width/2, top_left[1]*size+height/2, rect_width, rect_height))
+    pygame.draw.rect(surface, color, rect)
     return rect
 
 def draw_square(surface, color, top_left, size):
     global width, height
     rect = pygame.Rect(top_left[0]*size+width/2, top_left[1]*size+height/2, size, size)
 
-    pygame.draw.rect(surface, color, pygame.Rect(top_left[0]*size+width/2, top_left[1]*size+height/2, size, size))
+    pygame.draw.rect(surface, color, rect)
     return rect
 
 def draw_flag(surface, color, top_left, size):
@@ -95,7 +93,6 @@ def draw_triangle(surface, color, first, second, third):
     global width, height
 
     pygame.draw.polygon(surface, color, ((first[0]*size + width/2, first[1]*size + height/2), (second[0]*size + width/2, second[1]*size + height/2), (third[0]*size + width/2, third[1]*size + height/2)))
-
 
 def draw_circle(surface, color, center, radius):
     global width, height
@@ -185,7 +182,7 @@ def render_scene(x, y):
     for koopa in koopas:
         koopa_rect = draw_square(window, colorGreen, (koopa.x - x/size, - koopa.y + y/size), size)
         koopa_rects.append([koopa_rect, koopas.index(koopa)])
-
+    
     for goomba in goombas:
         goomba_rect = draw_square(window, colorRed, (goomba.x - x/size, - goomba.y + y/size), size)
         goomba_rects.append([goomba_rect, goombas.index(goomba)])
