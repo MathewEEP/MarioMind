@@ -15,9 +15,9 @@ size = 16 # Size of squares
 width, height = 256, 240 # Game dimensions
 mariox, marioy = -6, -5
 velo_x, velo_y = 0, 0 # Difference in x and y
-marioState = 0 #0 = small, 1 = big, add powerups for states
 # these are velocities, need acceleration for both dx and dy (there's horizontal acceleration in actual game
 
+marioState = 0
 sizex, sizey = 20, 20 # Doesn't do anything rn
 
 timer = 0
@@ -72,6 +72,13 @@ def delete_block(x, y):
 def draw_background(color):
     pygame.draw.rect(window, color, pygame.Rect(0, 0, width, height))
 
+def draw_rect(surface, color, top_left, rect_width, rect_height):
+    global width, height
+    rect = pygame.Rect(top_left[0]*size+width/2, top_left[1]*size+height/2, rect_width, rect_height)
+
+    pygame.draw.rect(surface, color, pygame.Rect(top_left[0]*size+width/2, top_left[1]*size+height/2, rect_width, rect_height))
+    return rect
+
 def draw_square(surface, color, top_left, size):
     global width, height
     rect = pygame.Rect(top_left[0]*size+width/2, top_left[1]*size+height/2, size, size)
@@ -114,6 +121,14 @@ def draw_square_rect(surface, color, rect):
     pygame.draw.rect(surface, color, rect)
 
 # Rendering
+def mario_state(state, x,y):
+    global mario
+    if state == 0:
+        mario = draw_square(window, colorTan, (mariox - x/size, -marioy + y/size), size)
+        return
+    if state == 1:
+        mario = draw_rect(window, colorTan, (mariox - x/size, -marioy + y/size), size, size*2)
+
 def render_scene(x, y):
     global sizex, sizey
     draw_background(colorWhite)
@@ -139,8 +154,7 @@ def render_scene(x, y):
     draw_circle(window, colorGreen, (flag_x + 0.1 - x/size, -(flag_height - 1) + y/size), 4)
 
     # Mario Rendering
-    global mario
-    mario = draw_square(window, colorTan, (mariox - x/size, -marioy + y/size), size)
+    mario_state(marioState,x,y)
 
     #Entity rendering
 
@@ -383,10 +397,12 @@ def powerupCollision():
                 break
 
 def mushroomCollision():
+    global marioState
     for i in range(len(mushroom_rects)):
         mushroom_rect = mushroom_rects[i][0]
         if mushroom_rect.colliderect(mario):
             print("Mushroom collide")
+            marioState = 1
             mushrooms.pop(mushroom_rects[i][1])
             break
         
