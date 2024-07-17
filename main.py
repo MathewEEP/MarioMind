@@ -130,17 +130,14 @@ def render_scene(x, y):
     global sizex, sizey
     draw_background(colorWhite)
     draw_background(colorBlue)
-    for block in blocks:
-        draw_square(window, blocks[block][0], (block[0] - x/size, -block[1] + y/size), size)
 
-    # Render flag
-    # Pole
-    for line in flag:
-        draw_flag(window, flag[line][0], (line[0] - x/size, -line[1] + y/size), size)
-    # Flag triangle
-    draw_triangle(window, colorGreen, (flag_x - x/size, -(flag_height - 2) + y/size), (flag_x - x/size, -(flag_height - 1.25) + y/size), (flag_x - x/size - 1, -(flag_height - 1.25) + y/size))
-    # Circle on top
-    draw_circle(window, colorGreen, (flag_x + 0.1 - x/size, -(flag_height - 1) + y/size), 4)
+    global block_rects
+    block_rects = []
+
+    for block in blocks:
+        block_rect = draw_square(window, blocks[block][0], (block[0] - x/size, -block[1] + y/size), size)
+        block_rects.append([block_rect, block])
+
     # Render flag
     # Pole
     for line in flag:
@@ -289,22 +286,19 @@ def timerCount():
     global timer
     timer += 1
 
-def leftIntersection(rect):
-    global mario
-    if rect.colliderect(mario):
-        return mario.left <= rect.left <= mario.right and mario.top <= rect.top <= mario.bottom
+def leftIntersection(mainRect, detect):
+    if mainRect.colliderect(detect):
+        return detect.left <= mainRect.left <= detect.right and detect.top <= mainRect.top <= detect.bottom
     return False
 
-def rightIntersection(rect):
-    global mario
-    if rect.colliderect(mario):
-        return rect.left <= mario.left <= rect.right and mario.top <= rect.top <= mario.bottom
+def rightIntersection(mainRect, detect):
+    if mainRect.colliderect(detect):
+        return mainRect.left <= detect.left <= mainRect.right and detect.top <= mainRect.top <= detect.bottom
     return False
 
-def verticalIntersection(rect):
-    global mario
-    if rect.colliderect(mario):
-        return mario.bottom > rect.top and mario.top < rect.top
+def verticalIntersection(mainRect, detect):
+    if mainRect.colliderect(detect):
+        return detect.bottom > mainRect.top and detect.top < mainRect.top
     return False
 
 def goombaCollision():
@@ -312,15 +306,15 @@ def goombaCollision():
     for i in range(len(goomba_rects)):
         goomba_rect = goomba_rects[i][0]
         
-        if verticalIntersection(goomba_rect) and timer >= 5:
+        if verticalIntersection(goomba_rect, mario) and timer >= 5:
             print("Goomba dead")
             goombas.pop(goomba_rects[i][1])
             bounceMario()
             break
-        elif rightIntersection(goomba_rect):
+        elif rightIntersection(goomba_rect, mario):
             print("Goomba - RIGHT INTERSECTION")
             gameEnded = True
-        elif leftIntersection(goomba_rect):
+        elif leftIntersection(goomba_rect, mario):
             print("Goomba - LEFT INTERSECTION")
             gameEnded = True
 
@@ -328,19 +322,19 @@ def koopaCollision():
     global gameEnded, timer
     for i in range(len(koopa_rects)):
         koopa_rect = koopa_rects[i][0]
-        if koopa_rect.colliderect(mario):
-            if mario.bottom > koopa_rect.top and mario.top < koopa_rect.top and timer >= 5:
-                print("Koopa dead")
-                shells.append(shell(koopas[i].x, koopas[i].y, random.randint(0, 2))) # goombas.append(goomba(block[0], block[1] + 2, random.randint(0, 2)))
-                koopas.pop(koopa_rects[i][1])
-                bounceMario()
-                break
-            elif koopa_rect.left <= mario.left <= koopa_rect.right and mario.top <= koopa_rect.top <= mario.bottom:
-                print("Koopa - RIGHT INTERSECTION")
-                gameEnded = True
-            elif mario.left <= koopa_rect.left <= mario.right and mario.top <= koopa_rect.top <= mario.bottom:
-                print("Koopa - LEFT INTERSECTION")
-                gameEnded = True
+
+        if verticalIntersection(koopa_rect, mario) and timer >= 5:
+            print("Koopa dead")
+            shells.append(shell(koopas[i].x, koopas[i].y, random.randint(0, 2))) # goombas.append(goomba(block[0], block[1] + 2, random.randint(0, 2)))
+            koopas.pop(koopa_rects[i][1])
+            bounceMario()
+            break
+        elif rightIntersection(koopa_rect, mario):
+            print("Koopa - RIGHT INTERSECTION")
+            gameEnded = True
+        elif leftIntersection(koopa_rect, mario):
+            print("Koopa - LEFT INTERSECTION")
+            gameEnded = True
 
 def shellCollision():
     global gameEnded, velo_y, marioy, timer
@@ -348,31 +342,31 @@ def shellCollision():
         shell_rect = shell_rects[i][0]
 
         if (shells[i].active == True):
-            if shell_rect.colliderect(mario) and timer >= 5:
-                if mario.bottom > shell_rect.top and mario.top < shell_rect.top:
-                    bounceMario()
-                    print("Shell toggled")
-                    shells[i].active = False
-                    break
-                elif shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom and not shells[i].left:
-                    print("Shell - RIGHT INTERSECTION")
-                    gameEnded = True
-                elif mario.left <= shell_rect.left <= mario.right and mario.top <= shell_rect.top <= mario.bottom and shells[i].left:
-                    print("Shell - LEFT INTERSECTION")
-                    gameEnded = True
+            if verticalIntersection(shell_rect, mario) and timer >= 5:
+                bounceMario()
+                print("Shell toggled")
+                shells[i].active = False
+                break
+            elif rightIntersection(shell_rect, mario) and not shells[i].left and timer >= 5:
+                print("Shell - RIGHT INTERSECTION")
+                gameEnded = True
+            elif leftIntersection(shell_rect, mario) and shells[i].left and timer >= 5:
+                print("Shell - LEFT INTERSECTION")
+                gameEnded = True
         else:
-            if shell_rect.colliderect(mario) and timer >= 5:
-                shells[i].active = True
-                if mario.bottom > shell_rect.top and mario.top < shell_rect.top:
-                    bounceMario()
-                if shell_rect.left <= mario.left <= shell_rect.right and mario.top <= shell_rect.top <= mario.bottom:
-                    print("Shell - RIGHT INTERSECTION")
-                    shells[i].left = True
-                    timer = 0
-                elif mario.left <= shell_rect.left <= mario.right and mario.top <= shell_rect.top <= mario.bottom:
-                    print("Shell - LEFT INTERSECTION")
-                    shells[i].left = False
-                    timer = 0
+            if not (shell_rect.colliderect(mario) and timer >= 5): continue
+                
+            shells[i].active = True
+            if verticalIntersection(shell_rect, mario) and timer >= 5:
+                bounceMario()
+            if rightIntersection(shell_rect, mario) and timer >= 5:
+                print("Shell - RIGHT INTERSECTION")
+                shells[i].left = True
+                timer = 0
+            elif leftIntersection(shell_rect, mario) and timer >= 5:
+                print("Shell - LEFT INTERSECTION")
+                shells[i].left = False
+                timer = 0
 
 def coinCollision():
     for i in range(len(coin_rects)):
@@ -480,7 +474,7 @@ def physics(inputs):
         velo_x = 0
     
     for shell in shell_rects:
-        if leftIntersection(shell[0]) or rightIntersection(shell[0]):
+        if leftIntersection(shell[0], mario) or rightIntersection(shell[0], mario):
             mariox -= velo_x
             velo_x = 0
             break
