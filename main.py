@@ -317,10 +317,10 @@ def koopaCollision():
                 koopas.pop(koopa_rects[i][1])
                 bounceMario()
                 break
-            elif koopa_rect.left <= mario.left <= koopa_rect.right and mario.top <= koopa_rect.top <= mario.bottom:
+            elif koopa_rect.left <= mario.left <= koopa_rect.right and mario.top <= koopa_rect.top <= mario.bottom and mario.left < koopa_rect.left:
                 print("Koopa - RIGHT INTERSECTION")
                 gameEnded = True
-            elif mario.left <= koopa_rect.left <= mario.right and mario.top <= koopa_rect.top <= mario.bottom:
+            elif mario.left <= koopa_rect.left <= mario.right and mario.top <= koopa_rect.top <= mario.bottom and mario.left > koopa_rect.left:
                 print("Koopa - LEFT INTERSECTION")
                 gameEnded = True
 
