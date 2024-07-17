@@ -456,7 +456,7 @@ def physics(inputs):
         velo_x = 0
     
     for shell in shell_rects:
-        if leftIntersection(shell) or rightIntersection(shell):
+        if leftIntersection(shell[0]) or rightIntersection(shell[0]):
             mariox -= velo_x
             velo_x = 0
             break
