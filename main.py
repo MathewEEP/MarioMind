@@ -380,6 +380,14 @@ def powerupCollision():
                 mushrooms.append(mushroom(powerupBlocks[i].x, powerupBlocks[i].y + 1, False))
                 powerupBlocks.pop(powerup_rects[i][1])
 
+def mushroomCollision():
+    for i in range(len(mushroom_rects)):
+        mushroom_rect = mushroom_rects[i][0]
+        if mushroom_rect.colliderect(mario):
+            print("Mushroom collide")
+            mushrooms.pop(mushroom_rects[i][1])
+            break
+
 def bounceMario():
     global velo_y, marioy, timer
     timer = 0
