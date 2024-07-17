@@ -210,9 +210,7 @@ def updateGoombas():
                 goomba.dy = 0
             if not(round(goomba.x), math.floor(goomba.y-0.2)) in blocks:
                 goomba.dy -= 0.02
-            if goomba.x - camerax <= -7:
-                goomba.visible = False
-        elif -7 < goomba.x - camerax <= 7:
+        elif -8 < goomba.x - camerax <= 7:
             goomba.visible = True
 
 def updateShells():
@@ -254,8 +252,6 @@ def updateKoopas():
                 koopa.dy = 0
             if not(round(koopa.x), math.floor(koopa.y-0.2)) in blocks:
                 koopa.dy -= 0.02
-            if koopa.x - camerax <= -7:
-                koopa.visible = False
         elif koopa.x - camerax <= 7:
             koopa.visible = True
 
