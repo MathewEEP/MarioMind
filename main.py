@@ -273,7 +273,6 @@ def updateMushrooms():
         if not(round(mushroom.x), math.floor(mushroom.y-0.2)) in blocks:
             mushroom.dy -= 0.02
         
-
 def timerCount():
     global timer
     timer += 1
@@ -379,7 +378,16 @@ def powerupCollision():
             if powerup_rect.bottom >= mario.top:  # bottom intersection
                 mushrooms.append(mushroom(powerupBlocks[i].x, powerupBlocks[i].y + 1, False)) #shells.append(shell(koopas[i].x, koopas[i].y, random.randint(0, 2)))
                 powerupBlocks.pop(powerup_rects[i][1])
+                break
 
+def mushroomCollision():
+    for i in range(len(mushroom_rects)):
+        mushroom_rect = mushroom_rects[i][0]
+        if mushroom_rect.colliderect(mario):
+            print("Mushroom collide")
+            mushrooms.pop(mushroom_rects[i][1])
+            break
+        
 def bounceMario():
     global velo_y, marioy, timer
     timer = 0
@@ -468,10 +476,8 @@ def physics(inputs):
 def generateMap():
     gaps = []
     platformBlocks = []
-    
     #Generate individual tests below
     powerupBlocks.append(powerupBlock(0,-1))
-
     #Procedural generation below
     for x in range(0, 148):
         if random.randint(1, 20) == 1:
