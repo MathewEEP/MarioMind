@@ -137,9 +137,6 @@ def render_scene(x, y):
     # Circle on top
     draw_circle(window, colorGreen, (flag_x + 0.1 - x/size, -(flag_height - 1) + y/size), 4)
 
-    #Entity rendering
-    #...
-
     # Mario Rendering
     global mario
     mario = draw_square(window, colorTan, (mariox - x/size, -marioy + y/size), size)
@@ -274,6 +271,24 @@ def timerCount():
     global timer
     timer += 1
 
+def leftIntersection(rect):
+    global mario
+    if rect.colliderect(mario):
+        return rect.left <= mario.left <= rect.right and mario.top <= rect.top <= mario.bottom
+    return False
+
+def rightIntersection(rect):
+    global mario
+    if rect.colliderect(mario):
+        return rect.left <= mario.left <= rect.right and mario.top <= rect.top <= mario.bottom
+    return False
+
+def verticalIntersection(rect):
+    global mario
+    if rect.colliderect(mario):
+        return mario.bottom > rect.top and mario.top < rect.top
+    return False
+
 def goombaCollision():
     global gameEnded, timer
     for i in range(len(goomba_rects)):
@@ -379,7 +394,7 @@ def blockOnLeft(x, y):
     return (x, y) in blocks
 
 def blockOnRight(x, y):
-    x, y = math.floor(x)+1, round(y)
+    x, y = math.floor(x)+1, round(y)    
     return (x, y) in blocks
 
 def blockOnTop(x, y):
