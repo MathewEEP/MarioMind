@@ -15,6 +15,7 @@ size = 16 # Size of squares
 width, height = 256, 240 # Game dimensions
 mariox, marioy = -6, -5
 velo_x, velo_y = 0, 0 # Difference in x and y
+marioState = 0 #0 = small, 1 = big, add powerups for states
 # these are velocities, need acceleration for both dx and dy (there's horizontal acceleration in actual game
 
 sizex, sizey = 20, 20 # Doesn't do anything rn
@@ -377,6 +378,7 @@ def powerupCollision():
             print("powerup collide")
             if powerup_rect.bottom >= mario.top:  # bottom intersection
                 mushrooms.append(mushroom(powerupBlocks[i].x, powerupBlocks[i].y + 1, False)) #shells.append(shell(koopas[i].x, koopas[i].y, random.randint(0, 2)))
+                print(mushrooms)
                 powerupBlocks.pop(powerup_rects[i][1])
                 break
 
@@ -532,7 +534,8 @@ while not gameEnded:
     coinCollision()
     powerupCollision()
     shellCollision()
-
+    mushroomCollision()
+    
     updateKoopas()
     updateGoombas()
     updateShells()
