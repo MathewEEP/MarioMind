@@ -254,6 +254,8 @@ def updateKoopas():
                 koopa.dy = 0
             if not(round(koopa.x), math.floor(koopa.y-0.2)) in blocks:
                 koopa.dy -= 0.02
+            if koopa.x - camerax <= -7:
+                koopa.visible = False
         elif koopa.x - camerax <= 7:
             koopa.visible = True
 
