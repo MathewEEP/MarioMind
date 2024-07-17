@@ -293,18 +293,18 @@ def goombaCollision():
     global gameEnded, timer
     for i in range(len(goomba_rects)):
         goomba_rect = goomba_rects[i][0]
-        if goomba_rect.colliderect(mario):
-            if mario.bottom > goomba_rect.top and mario.top < goomba_rect.top and timer >= 5:
-                print("Goomba dead")
-                goombas.pop(goomba_rects[i][1])
-                bounceMario()
-                break
-            elif goomba_rect.left <= mario.left <= goomba_rect.right and mario.top <= goomba_rect.top <= mario.bottom:
-                print("Goomba - RIGHT INTERSECTION")
-                gameEnded = True
-            elif mario.left <= goomba_rect.left <= mario.right and mario.top <= goomba_rect.top <= mario.bottom:
-                print("Goomba - LEFT INTERSECTION")
-                gameEnded = True
+        
+        if verticalIntersection(goomba_rect) and timer >= 5:
+            print("Goomba dead")
+            goombas.pop(goomba_rects[i][1])
+            bounceMario()
+            break
+        elif rightIntersection(goomba_rect):
+            print("Goomba - RIGHT INTERSECTION")
+            gameEnded = True
+        elif leftIntersection(goomba_rect):
+            print("Goomba - LEFT INTERSECTION")
+            gameEnded = True
 
 def koopaCollision():
     global gameEnded, timer
