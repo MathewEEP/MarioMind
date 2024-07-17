@@ -193,21 +193,22 @@ def render_scene(x, y):
 
 def updateGoombas():
      for goomba in goombas:
-        goomba.update()
-        if goomba.left:
-            goomba.dx = -goomba.speed
-        else:
-            goomba.dx = goomba.speed
-        
-        if (math.ceil(goomba.x-1), round(goomba.y)) in blocks and goomba.left:
-            goomba.left = False
-        elif (math.floor(goomba.x+1), round(goomba.y)) in blocks and not goomba.left:
-            goomba.left = True
-        if (round(goomba.x), math.floor(goomba.y)) in blocks and goomba.dy < 0:
-            goomba.y = math.floor(goomba.y)+1
-            goomba.dy = 0
-        if not(round(goomba.x), math.floor(goomba.y-0.2)) in blocks:
-            goomba.dy -= 0.02
+        if goomba.visible:
+            goomba.update()
+            if goomba.left:
+                goomba.dx = -goomba.speed
+            else:
+                goomba.dx = goomba.speed
+            
+            if (math.ceil(goomba.x-1), round(goomba.y)) in blocks and goomba.left:
+                goomba.left = False
+            elif (math.floor(goomba.x+1), round(goomba.y)) in blocks and not goomba.left:
+                goomba.left = True
+            if (round(goomba.x), math.floor(goomba.y)) in blocks and goomba.dy < 0:
+                goomba.y = math.floor(goomba.y)+1
+                goomba.dy = 0
+            if not(round(goomba.x), math.floor(goomba.y-0.2)) in blocks:
+                goomba.dy -= 0.02
 
 def updateShells():
      for shell in shells:
@@ -232,21 +233,22 @@ def updateShells():
 
 def updateKoopas():
     for koopa in koopas:
-        koopa.update()
-        if koopa.left:
-            koopa.dx = -koopa.speed
-        else:
-            koopa.dx = koopa.speed
-        
-        if (math.ceil(koopa.x-1), round(koopa.y)) in blocks and koopa.left:
-            koopa.left = False
-        elif (math.floor(koopa.x+1), round(koopa.y)) in blocks and not koopa.left:
-            koopa.left = True
-        if (round(koopa.x), math.floor(koopa.y)) in blocks and koopa.dy < 0:
-            koopa.y = math.floor(koopa.y)+1
-            koopa.dy = 0
-        if not(round(koopa.x), math.floor(koopa.y-0.2)) in blocks:
-            koopa.dy -= 0.02
+        if koopa.visible:
+            koopa.update()
+            if koopa.left:
+                koopa.dx = -koopa.speed
+            else:
+                koopa.dx = koopa.speed
+            
+            if (math.ceil(koopa.x-1), round(koopa.y)) in blocks and koopa.left:
+                koopa.left = False
+            elif (math.floor(koopa.x+1), round(koopa.y)) in blocks and not koopa.left:
+                koopa.left = True
+            if (round(koopa.x), math.floor(koopa.y)) in blocks and koopa.dy < 0:
+                koopa.y = math.floor(koopa.y)+1
+                koopa.dy = 0
+            if not(round(koopa.x), math.floor(koopa.y-0.2)) in blocks:
+                koopa.dy -= 0.02
 
 def updateMushrooms():
     for mushroom in mushrooms:
