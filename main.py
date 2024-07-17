@@ -454,6 +454,12 @@ def physics(inputs):
     if (blockOnLeft(mariox, marioy)) or (blockOnRight(mariox, marioy)) or ((mariox * size) <= (camerax - width/2)):
         mariox -= velo_x
         velo_x = 0
+    
+    for shell in shell_rects:
+        if leftIntersection(shell) or rightIntersection(shell):
+            mariox -= velo_x
+            velo_x = 0
+            break
 
     velo_y -= 0.025
     velo_y = max(-size, velo_y)   
