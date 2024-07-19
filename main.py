@@ -117,6 +117,10 @@ def draw_square_rect(surface, color, rect):
     global width, height
     pygame.draw.rect(surface, color, rect)
 
+def isColliding(objectA, objectB):
+    return objectA.x < objectB.x + objectB.width and objectA.x + objectA.width > objectB.x and objectA.y < objectB.y + objectB.height and objectA.y + objectA.height > objectB.y
+
+
 # Rendering
 def mario_state(state, x,y):
     global mario
