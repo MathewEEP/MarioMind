@@ -486,7 +486,7 @@ def generateMap():
     gaps = []
     platformBlocks = []
     #Generate individual tests below
-    powerupBlocks.append(powerupBlock(0,-1))
+    powerupBlocks.append(powerupBlock(0,-1)) #Test
     #Procedural generation below
     for x in range(0, 148):
         if random.randint(1, 20) == 1:
