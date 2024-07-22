@@ -464,9 +464,9 @@ def camera():
 def freecam(inputs):
     global camerax
     if "a" in inputs:
-        camerax -= 1
+        camerax -= 5
     if "d" in inputs:
-        camerax += 1
+        camerax += 5
         
 def physics(inputs):
     global mariox, marioy, velo_x, velo_y, gameEnded
