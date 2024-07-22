@@ -457,9 +457,16 @@ def getInputs():
     return output
 
 def camera():
-    global camerax, cameray
+    global camerax
     if mariox * size > camerax:
         camerax = mariox * size
+
+def freecam(inputs):
+    global camerax
+    if "a" in inputs:
+        camerax -= 1
+    if "d" in inputs:
+        camerax += 1
         
 def physics(inputs):
     global mariox, marioy, velo_x, velo_y, gameEnded
@@ -573,3 +580,5 @@ while not gameEnded:
         updateGoombas()
         updateShells()
         updateMushrooms()
+    else:
+        freecam(inputs)
