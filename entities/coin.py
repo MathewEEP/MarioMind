@@ -6,4 +6,4 @@ class coin(gameObject):
     def update():
         #Move update functions here,
         pass
-    def Mariocollision():
+    def collect():
