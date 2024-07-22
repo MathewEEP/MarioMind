@@ -137,7 +137,6 @@ def entityCollision():
     for firstEntity in entities:
         for secondEntity in entities[entities.index(firstEntity) + 1:]:
             if isColliding(firstEntity, secondEntity):
-                print("YAY")
                 firstEntity.left = not firstEntity.left
                 if firstEntity.left:
                     firstEntity.x -= 0.1
