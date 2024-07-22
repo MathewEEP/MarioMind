@@ -130,6 +130,16 @@ def mario_state(state, x,y):
     if state == 1:
         mario = draw_rect(window, colorTan, (mariox - x/size, -1-marioy + y/size), size, size*2)
 
+def entityCollision():
+    entities = koompas + goombas # + more in the future
+    for firstEntity in entities:
+        for secondEntity in entities:
+            if firstEntity == secondEntity:
+                continue
+            if isColliding(firstEntity, secondEntity): # make sure isColliding works
+                firstEntity.left = not firstEntity.left
+                secondEntity.left = not secondEntity.left
+
 def render_scene(x, y):
     global sizex, sizey
     draw_background(colorWhite)
@@ -546,7 +556,9 @@ while not gameEnded:
     powerupCollision()
     shellCollision()
     mushroomCollision()
-    
+
+    entityCollision()
+
     updateKoopas()
     updateGoombas()
     updateShells()
