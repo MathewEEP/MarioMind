@@ -437,7 +437,7 @@ def blockOnTop(x, y):
     return (x, y) in blocks
 
 def getInputs():
-    global pause
+    global paused
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -452,7 +452,7 @@ def getInputs():
     if keys[pygame.K_SPACE]: output.append("space")
     if keys[pygame.K_f]: output.append("f")
     if keys[pygame.K_p]:
-        pause = not pause
+        paused = not paused
 
     return output
 
