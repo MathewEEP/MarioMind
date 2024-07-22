@@ -134,10 +134,8 @@ def mario_state(state, x,y):
 
 def entityCollision():
     entities = koopas + goombas # + more in the future
-    for firstEntity in entities[:round(len(entities)/2)]:
-        for secondEntity in entities[round(len(entities)/2):]:
-            if firstEntity == secondEntity:
-                continue
+    for firstEntity in entities:
+        for secondEntity in entities[entities.index(firstEntity) + 1:]:
             if isColliding(firstEntity, secondEntity):
                 print("YAY")
                 firstEntity.left = not firstEntity.left
