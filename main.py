@@ -136,7 +136,8 @@ def entityCollision():
         for secondEntity in entities:
             if firstEntity == secondEntity:
                 continue
-            if isColliding(firstEntity, secondEntity): # make sure isColliding works
+            if isColliding(firstEntity, secondEntity):
+                print("YAY")
                 firstEntity.left = not firstEntity.left
                 secondEntity.left = not secondEntity.left
 
