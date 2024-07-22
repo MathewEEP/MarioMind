@@ -7,3 +7,4 @@ class coin(gameObject):
         #Move update functions here,
         pass
     def collect():
+        pass
