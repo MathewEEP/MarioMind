@@ -131,7 +131,7 @@ def mario_state(state, x,y):
         mario = draw_rect(window, colorTan, (mariox - x/size, -1-marioy + y/size), size, size*2)
 
 def entityCollision():
-    entities = koompas + goombas # + more in the future
+    entities = koopas + goombas # + more in the future
     for firstEntity in entities:
         for secondEntity in entities:
             if firstEntity == secondEntity:
