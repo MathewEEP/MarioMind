@@ -526,20 +526,23 @@ def generateMap():
             add_block(x, -7, colorBrown)
             add_block(x, -6, colorBrown)
         if random.randint(1, 50) == 1:
-            goombas.append(goomba(x, -5, random.randint(0, 2)))
+            goombas.append(goomba(x, -5, random.choice([True, False])))
         if random.randint(1, 50) == 1:
-            koopas.append(koopa(x, -5, random.randint(0, 2)))
+            koopas.append(koopa(x, -5, random.choice([True, False])))
         if random.randint(1, 50) == 1:
-            coins.append(coin(x, random.randint(-5, -2), random.randint(0, 2)))
+            coins.append(coin(x, random.randint(-5, -2), random.choice([True, False])))
     for block in platformBlocks:
         if random.randint(1, 20) == 1:
-            goombas.append(goomba(block[0], block[1] + 2, random.randint(0, 2)))
+            goombas.append(goomba(block[0], block[1] + 2, random.choice([True, False])))
         if random.randint(1, 20) == 1:
-            koopas.append(koopa(block[0], block[1] + 2, random.randint(0, 2)))
+            koopas.append(koopa(block[0], block[1] + 2, random.choice([True, False])))
         if random.randint(1, 20) == 1:
-            coins.append(coin(block[0], random.randint(2, 4) + block[1], random.randint(0, 2)))
+            coins.append(coin(block[0], random.randint(2, 4) + block[1], random.choice([True, False])))
         if random.randint(1, 20) == 1:
             powerupBlocks.append(powerupBlock(block[0], block[1]))
+    # ez testing™
+    goombas.append(goomba(10, -5, True))
+    goombas.append(goomba(20, -5, False))
 
 generateMap()
 
