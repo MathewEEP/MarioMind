@@ -20,6 +20,8 @@ velo_x, velo_y = 0, 0 # Difference in x and y
 marioState = 0
 sizex, sizey = 20, 20 # Doesn't do anything rn
 
+paused = False
+
 timer = 0
 
 PLAYER_MAX_SPEED = 0.2
@@ -435,6 +437,7 @@ def blockOnTop(x, y):
     return (x, y) in blocks
 
 def getInputs():
+    global pause
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -448,6 +451,8 @@ def getInputs():
     if keys[pygame.K_d]: output.append("d")
     if keys[pygame.K_SPACE]: output.append("space")
     if keys[pygame.K_f]: output.append("f")
+    if keys[pygame.K_p]:
+        pause = not pause
 
     return output
 
@@ -552,18 +557,19 @@ while not gameEnded:
     render_scene(camerax, cameray)
     pygame.display.flip()
     inputs = getInputs()
-    physics(inputs)
-    timerCount()
-    koopaCollision()
-    goombaCollision()
-    coinCollision()
-    powerupCollision()
-    shellCollision()
-    mushroomCollision()
+    if not paused:
+        physics(inputs)
+        timerCount()
+        koopaCollision()
+        goombaCollision()
+        coinCollision()
+        powerupCollision()
+        shellCollision()
+        mushroomCollision()
 
-    entityCollision()
+        entityCollision()
 
-    updateKoopas()
-    updateGoombas()
-    updateShells()
-    updateMushrooms()
+        updateKoopas()
+        updateGoombas()
+        updateShells()
+        updateMushrooms()
