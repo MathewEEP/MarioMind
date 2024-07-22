@@ -442,6 +442,8 @@ def getInputs():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+            paused = not paused
     
     keys = pygame.key.get_pressed()
     output = []
@@ -451,8 +453,6 @@ def getInputs():
     if keys[pygame.K_d]: output.append("d")
     if keys[pygame.K_SPACE]: output.append("space")
     if keys[pygame.K_f]: output.append("f")
-    if keys[pygame.K_p]:
-        paused = not paused
 
     return output
 
