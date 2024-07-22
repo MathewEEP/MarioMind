@@ -139,7 +139,15 @@ def entityCollision():
             if isColliding(firstEntity, secondEntity):
                 print("YAY")
                 firstEntity.left = not firstEntity.left
+                if firstEntity.left:
+                    firstEntity.x -= 1
+                else:
+                    firstEntity.x += 1
                 secondEntity.left = not secondEntity.left
+                if secondEntity.left:
+                    secondEntity.x -= 1
+                else:
+                    secondEntity.x += 1
 
 def render_scene(x, y):
     global sizex, sizey
