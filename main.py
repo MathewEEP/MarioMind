@@ -541,8 +541,8 @@ def generateMap():
         if random.randint(1, 20) == 1:
             powerupBlocks.append(powerupBlock(block[0], block[1]))
     # ez testing™
-    goombas.append(goomba(10, -5, True))
-    goombas.append(goomba(20, -5, False))
+    goombas.append(goomba(0, -5, False))
+    goombas.append(goomba(5, -5, True))
 
 generateMap()
 
