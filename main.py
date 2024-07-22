@@ -538,7 +538,7 @@ def generateMap():
                     break
             add_block(platx + j, platy, colorBlack)
             platformBlocks.append([platx + j, platy])
-    for x in range(-50, 150):
+    for x in range(-50, 250):
         if not x in gaps:
             add_block(x, -7, colorBrown)
             add_block(x, -6, colorBrown)
@@ -557,9 +557,6 @@ def generateMap():
             coins.append(coin(block[0], random.randint(2, 4) + block[1], random.choice([True, False])))
         if random.randint(1, 20) == 1:
             powerupBlocks.append(powerupBlock(block[0], block[1]))
-    # ez testing™
-    goombas.append(goomba(0, -5, False))
-    goombas.append(goomba(5, -5, True))
 
 generateMap()
 
