@@ -402,8 +402,11 @@ def powerupCollision():
     for i in range(len(powerup_rects)):
         powerup_rect = powerup_rects[i][0]
         if powerup_rect.colliderect(mario):
-            print("powerup collide")
-            if powerup_rect.bottom >= mario.top:  # bottom intersection
+            if powerup_rect.bottom >= mario.top and powerup_rect.top < mario.bottom:  # bottom intersection
+                print(powerup_rect.top, powerup_rect.bottom)
+                print(mario.top, mario.bottom)
+                print("powerup collide")
+
                 mushrooms.append(mushroom(powerupBlocks[i].x, powerupBlocks[i].y + 1, False)) #shells.append(shell(koopas[i].x, koopas[i].y, random.randint(0, 2)))
                 print(mushrooms)
                 powerupBlocks.pop(powerup_rects[i][1])
@@ -439,7 +442,7 @@ def blockOnRight(x, y):
 
 def blockOnTop(x, y):
     x, y = round(x), math.ceil(y)
-    return (x, y) in blocks
+    return (x, y) in blocks or (x, y) in powerupBlocks
 
 def getInputs():
     global paused
@@ -479,7 +482,7 @@ def physics(inputs):
     if marioy < -10: # mario is in the void
         gameEnded = True
 
-    if (isOnGround(mariox, marioy) and velo_y <= 0) or blockOnTop(mariox, marioy):
+    if (isOnGround(mariox, marioy) and velo_y <= 0) or (marioState == 0 and blockOnTop(mariox, marioy)) or (marioState == 1 and blockOnTop(mariox, marioy + 1)):
         marioy -= velo_y
         velo_y = 0
         marioy = round(marioy)
