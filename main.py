@@ -125,12 +125,14 @@ def isColliding(objectA, objectB):
 
 # Rendering
 def mario_state(state, x,y):
-    global mario
-    if state == 0:
+    global mario, firstHalfMario, secondHalfMario
+    if state == 0: # 1 block tiny mario
         mario = draw_square(window, colorTan, (mariox - x/size, -marioy + y/size), size)
         return
-    if state == 1:
-        mario = draw_rect(window, colorTan, (mariox - x/size, -1-marioy + y/size), size, size*2)
+    if state == 1: # 2 block mario
+        firstHalfMario = draw_square(window, colorTan, (mariox - x/size, -(marioy + 1) + y/size), size)
+        secondHalfMario = draw_square(window, colorTan, (mariox - x/size, -marioy + y/size), size) 
+        # mario = draw_rect(window, colorTan, (mariox - x/size, -1-marioy + y/size), size, size*2)
 
 def entityCollision():
     entities = koopas + goombas # + more in the future
@@ -321,42 +323,112 @@ def rightIntersection(mainRect, detect):
 def verticalIntersection(mainRect, detect):
     if mainRect.colliderect(detect):
         return detect.bottom > mainRect.top and detect.top < mainRect.top
-    return False
+
+def topIntersection(mainRect, detect):
+    if mainRect.colliderect(detect):
+        return mainRect.bottom > detect.top and mainRect.top < detect.top
 
 def goombaCollision():
     global gameEnded, timer
     for i in range(len(goomba_rects)):
         goomba_rect = goomba_rects[i][0]
-        
-        if verticalIntersection(goomba_rect, mario) and timer >= 5:
-            print("Goomba dead")
-            goombas.pop(goomba_rects[i][1])
-            bounceMario()
-            break
-        elif rightIntersection(goomba_rect, mario):
-            print("Goomba - RIGHT INTERSECTION")
-            gameEnded = True
-        elif leftIntersection(goomba_rect, mario):
-            print("Goomba - LEFT INTERSECTION")
-            gameEnded = True
+        if marioState == 0:
+            if verticalIntersection(goomba_rect, mario) and timer >= 5:
+                print("Goomba dead")
+                goombas.pop(goomba_rects[i][1])
+                bounceMario()
+                break
+            elif topIntersection(goomba_rect, mario):
+                print("Died from top")
+                gameEnded = True
+            elif rightIntersection(goomba_rect, mario):
+                print("Goomba - RIGHT INTERSECTION")
+                gameEnded = True
+            elif leftIntersection(goomba_rect, mario):
+                print("Goomba - LEFT INTERSECTION")
+                gameEnded = True
+        else:
+            if verticalIntersection(goomba_rect, firstHalfMario) and timer >= 5:
+                print("Goomba dead")
+                goombas.pop(goomba_rects[i][1])
+                bounceMario()
+                break
+            elif topIntersection(goomba_rect, firstHalfMario):
+                print("Died from top")
+                gameEnded = True
+            elif rightIntersection(goomba_rect, firstHalfMario):
+                print("Goomba - RIGHT INTERSECTION")
+                gameEnded = True
+            elif leftIntersection(goomba_rect, firstHalfMario):
+                print("Goomba - LEFT INTERSECTION")
+                gameEnded = True
+            
+            if verticalIntersection(goomba_rect, secondHalfMario) and timer >= 5:
+                print("Goomba dead")
+                goombas.pop(goomba_rects[i][1])
+                bounceMario()
+                break
+            elif topIntersection(goomba_rect, secondHalfMario):
+                print("Died from top")
+                gameEnded = True
+            elif rightIntersection(goomba_rect, secondHalfMario):
+                print("Goomba - RIGHT INTERSECTION")
+                gameEnded = True
+            elif leftIntersection(goomba_rect, secondHalfMario):
+                print("Goomba - LEFT INTERSECTION")
+                gameEnded = True
 
 def koopaCollision():
     global gameEnded, timer
     for i in range(len(koopa_rects)):
         koopa_rect = koopa_rects[i][0]
 
-        if verticalIntersection(koopa_rect, mario) and timer >= 5:
-            print("Koopa dead")
-            shells.append(shell(koopas[i].x, koopas[i].y, random.randint(0, 2))) # goombas.append(goomba(block[0], block[1] + 2, random.randint(0, 2)))
-            koopas.pop(koopa_rects[i][1])
-            bounceMario()
-            break
-        elif rightIntersection(koopa_rect, mario):
-            print("Koopa - RIGHT INTERSECTION")
-            gameEnded = True
-        elif leftIntersection(koopa_rect, mario):
-            print("Koopa - LEFT INTERSECTION")
-            gameEnded = True
+        if marioState == 0:
+            if verticalIntersection(koopa_rect, mario) and timer >= 5:
+                print("Koopa dead")
+                koopas.pop(koopa_rects[i][1])
+                bounceMario()
+                break
+            elif topIntersection(koopa_rect, mario):
+                print("Died from top")
+                gameEnded = True
+            elif rightIntersection(koopa_rect, mario):
+                print("Koopa - RIGHT INTERSECTION")
+                gameEnded = True
+            elif leftIntersection(koopa_rect, mario):
+                print("Koopa - LEFT INTERSECTION")
+                gameEnded = True
+        else:
+            if verticalIntersection(koopa_rect, firstHalfMario) and timer >= 5:
+                print("Koopa dead")
+                koopas.pop(koopa_rects[i][1])
+                bounceMario()
+                break
+            elif topIntersection(koopa_rect, firstHalfMario):
+                print("Died from top")
+                gameEnded = True
+            elif rightIntersection(koopa_rect, firstHalfMario):
+                print("Koopa - RIGHT INTERSECTION")
+                gameEnded = True
+            elif leftIntersection(koopa_rect, firstHalfMario):
+                print("Koopa - LEFT INTERSECTION")
+                gameEnded = True
+            
+            if verticalIntersection(koopa_rect, secondHalfMario) and timer >= 5:
+                print("Koopa dead")
+                koopas.pop(koopa_rects[i][1])
+                bounceMario()
+                break
+            elif topIntersection(koopa_rect, secondHalfMario):
+                print("Died from top")
+                gameEnded = True
+            elif rightIntersection(koopa_rect, secondHalfMario):
+                print("Koopa - RIGHT INTERSECTION")
+                gameEnded = True
+            elif leftIntersection(koopa_rect, secondHalfMario):
+                print("Koopa - LEFT INTERSECTION")
+                gameEnded = True
+
 
 def shellCollision():
     global gameEnded, velo_y, marioy, timer
@@ -504,10 +576,15 @@ def physics(inputs):
     
     mariox, marioy = mariox + velo_x, marioy + velo_y
 
-    if (blockOnLeft(mariox, marioy)) or (blockOnRight(mariox, marioy)) or ((mariox * size) <= (camerax - width/2)):
-        mariox -= velo_x
-        velo_x = 0
-    
+    if marioState == 0:
+        if (blockOnLeft(mariox, marioy)) or (blockOnRight(mariox, marioy)) or ((mariox * size) <= (camerax - width/2)):
+            mariox -= velo_x
+            velo_x = -0.01
+    else:
+        if (blockOnLeft(mariox, marioy + 1)) or (blockOnRight(mariox, marioy + 1)) or ((mariox * size) <= (camerax - width/2)):
+            mariox -= velo_x
+            velo_x = 0
+
     for shell in shell_rects:
         if leftIntersection(shell[0], mario) or rightIntersection(shell[0], mario):
             mariox -= velo_x
@@ -515,7 +592,7 @@ def physics(inputs):
             break
 
     velo_y -= 0.025
-    velo_y = max(-size, velo_y)   
+    velo_y = max(-size, velo_y)
 
 def generateMap():
     gaps = []
